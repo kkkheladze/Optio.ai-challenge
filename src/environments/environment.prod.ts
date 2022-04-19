@@ -1,3 +1,5 @@
 export const environment = {
-  production: true
+  production: true,
+  OPTIO_BASE_API: 'https://api.next.insight.optio.ai/api/docs/analytics'
+
 };
