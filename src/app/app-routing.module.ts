@@ -5,7 +5,7 @@ import { TableComponent } from './components/pages/table/table.component';
 import { NotFoundComponent } from './components/pages/not-found/not-found.component';
 
 const routes: Routes = [
-    { path: '', component: DashboardComponent },
+    { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
     { path: 'dashboard', component: DashboardComponent },
     { path: 'table', component: TableComponent },
     { path: '**', component: NotFoundComponent },
