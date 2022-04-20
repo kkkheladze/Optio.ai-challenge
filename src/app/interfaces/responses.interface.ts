@@ -4,6 +4,7 @@ export interface AggregateCategoryResponse {
             dimension: string;
             dimensionId: string;
             volume: number;
+            quantity: number;
             type: string;
         }
     ];

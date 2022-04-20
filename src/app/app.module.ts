@@ -11,6 +11,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { DonutChartComponent } from './components/shared/echarts/donut-chart/donut-chart.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ReactiveFormsModule } from '@angular/forms';
+import { HeatmapComponent } from './components/shared/echarts/heatmap/heatmap.component';
 
 @NgModule({
     declarations: [
@@ -20,6 +21,7 @@ import { ReactiveFormsModule } from '@angular/forms';
         NotFoundComponent,
         NavComponent,
         DonutChartComponent,
+        HeatmapComponent,
     ],
     imports: [BrowserModule, ReactiveFormsModule, HttpClientModule, AppRoutingModule, NgbModule],
     providers: [],

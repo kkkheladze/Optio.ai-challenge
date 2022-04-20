@@ -1,1 +1,23 @@
-<p>heatmap works!</p>
+<div id="wrapper">
+    <h2>Spending Heatmap</h2>
+    <div #echart id="echart"></div>
+    <form
+        [formGroup]="inputDatesForm"
+        (ngSubmit)="getDataFromApiAndSetToChart()"
+        class="mt-4 d-flex gap-2 align-items-end flex-wrap"
+    >
+        <div class="d-flex flex-column">
+            <label for="metrics">View: </label>
+            <select id="metrics" formControlName="metrics" style="height: 1.8em">
+                <option value="volume">Volume</option>
+                <option value="quantity">Quantity</option>
+            </select>
+        </div>
+        <div class="d-flex flex-column">
+            <label for="date">Choose month: </label>
+            <input type="month" id="date" formControlName="date" [max]="maxDate" />
+        </div>
+
+        <button class="btn btn-outline-success">Refresh</button>
+    </form>
+</div>
