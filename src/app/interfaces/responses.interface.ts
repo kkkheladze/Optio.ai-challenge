@@ -1,4 +1,4 @@
-export interface AggregateCategory {
+export interface AggregateCategoryResponse {
     data: [
         {
             dimension: string;

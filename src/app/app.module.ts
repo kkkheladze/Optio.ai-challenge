@@ -9,6 +9,8 @@ import { NotFoundComponent } from './components/pages/not-found/not-found.compon
 import { NavComponent } from './components/nav/nav.component';
 import { HttpClientModule } from '@angular/common/http';
 import { DonutChartComponent } from './components/shared/echarts/donut-chart/donut-chart.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
     declarations: [
@@ -19,7 +21,7 @@ import { DonutChartComponent } from './components/shared/echarts/donut-chart/don
         NavComponent,
         DonutChartComponent,
     ],
-    imports: [BrowserModule, HttpClientModule, AppRoutingModule],
+    imports: [BrowserModule, ReactiveFormsModule, HttpClientModule, AppRoutingModule, NgbModule],
     providers: [],
     bootstrap: [AppComponent],
 })

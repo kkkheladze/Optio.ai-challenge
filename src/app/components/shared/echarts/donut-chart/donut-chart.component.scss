@@ -2,8 +2,14 @@
     h2 {
         font-size: 1rem;
     }
-    div {
-        height: 500px;
+    #echart {
+        height: 40vh;
+        min-height: 350px;
         width: 100%;
     }
+}
+.btn-outline-success {
+    background-color: #94ca00 !important;
+    color: white !important;
+    border: none;
 }

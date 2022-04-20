@@ -1,5 +1,20 @@
-<div id="wrapper" class="w-100 h-100">
+<div id="wrapper">
     <h2>Spending Category</h2>
-    <div #echart></div>
-    <button></button>
+    <div #echart id="echart"></div>
+    <form
+        [formGroup]="inputDatesForm"
+        (ngSubmit)="getDataFromApiAndSetToChart()"
+        class="mt-4 d-flex gap-2 align-items-end flex-wrap"
+    >
+        <div class="d-flex flex-column">
+            <label for="fromDate">From: </label>
+            <input type="date" id="fromDate" formControlName="from" [max]="inputDatesForm.value.to" />
+        </div>
+        <div class="d-flex flex-column">
+            <label for="fromDate">To: </label>
+            <input type="date" id="toDate" formControlName="to" [min]="inputDatesForm.value.from" />
+        </div>
+
+        <button class="btn btn-outline-success">Refresh</button>
+    </form>
 </div>
