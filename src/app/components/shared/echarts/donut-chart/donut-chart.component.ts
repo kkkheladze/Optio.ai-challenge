@@ -2,13 +2,12 @@ import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, ViewChil
 import * as echarts from 'echarts';
 import { EChartsType } from 'echarts';
 import { HttpClient } from '@angular/common/http';
-import { AggregateCategoryResponse } from '../../../../interfaces/responses.interface';
 import { AggregateCategoryRequest } from '../../../../interfaces/requests.interface';
 import { DoughnutOptions } from '../echart-options';
 import { ApiService } from '../../../../services/api.service';
-import { DoughnutChartData } from '../../../../interfaces/echart-data';
 import { ReplaySubject, takeUntil } from 'rxjs';
 import { FormControl, FormGroup } from '@angular/forms';
+import { EchartService } from '../../../../services/echart.service';
 
 @Component({
     selector: 'app-donut-chart',
@@ -32,13 +31,15 @@ export class DonutChartComponent implements AfterViewInit, OnDestroy {
     };
     private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
-    constructor(private http: HttpClient, private apiService: ApiService) {}
+    constructor(private http: HttpClient, private apiService: ApiService, private echartService: EchartService) {}
 
     ngAfterViewInit() {
         this.echart = echarts.init(this.echartElement.nativeElement);
         this.inputDatesForm.valueChanges.pipe(takeUntil(this.destroyed$)).subscribe((changedValue) => {
             this.requestBody.gteDate = changedValue.from;
             this.requestBody.lteDate = changedValue.to;
+
+            this.getDataFromApiAndSetToChart();
         });
         this.getDataFromApiAndSetToChart();
     }
@@ -50,27 +51,22 @@ export class DonutChartComponent implements AfterViewInit, OnDestroy {
             .pipe(takeUntil(this.destroyed$))
             .subscribe(
                 (res) => {
-                    this.echartOptions.series[0].data = this.transformResponseData(res);
+                    this.echartOptions.series[0].data = this.echartService.transformDoughnutChartData(res);
                     this.echart.setOption(this.echartOptions);
                     this.echart.hideLoading();
                 },
                 (error) => {
-                    alert(error);
+                    alert(error.message);
                     this.echart.hideLoading();
                 }
             );
     }
 
-    transformResponseData(data: AggregateCategoryResponse): DoughnutChartData[] {
-        return data.data.map((value) => {
-            return { value: value.volume, name: value.dimension };
-        });
-    }
-
     // Without this echart canvas is not resizing on the viewport change.
     @HostListener('window:resize', ['$event'])
-    onResize(event: any) {
+    onResize(event: Event) {
         this.echart.resize();
+        event.preventDefault();
     }
 
     ngOnDestroy() {
