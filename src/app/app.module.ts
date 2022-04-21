@@ -14,6 +14,8 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { HeatmapComponent } from './components/shared/echarts/heatmap/heatmap.component';
 import { StoreModule } from '@ngrx/store';
 import { echartsReducer } from './state/echarts/echarts.reducer';
+import { environment } from '../environments/environment';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 @NgModule({
     declarations: [
@@ -32,6 +34,7 @@ import { echartsReducer } from './state/echarts/echarts.reducer';
         AppRoutingModule,
         NgbModule,
         StoreModule.forRoot({ echarts: echartsReducer }),
+        StoreDevtoolsModule.instrument({ name: 'Optio.ai Challenge', maxAge: 25, logOnly: environment.production }),
     ],
     providers: [],
     bootstrap: [AppComponent],

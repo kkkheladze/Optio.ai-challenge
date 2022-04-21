@@ -29,8 +29,7 @@ export class DonutChartComponent implements AfterViewInit, OnDestroy {
         to: new FormControl(''),
     });
     echartOptions = DoughnutOptions;
-
-    private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
+    destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
     constructor(private store: Store<AppState>, private apiService: ApiService, private echartService: EchartService) {
         this.echartData$ = this.store.select(selectDoughnutChart);
@@ -44,6 +43,8 @@ export class DonutChartComponent implements AfterViewInit, OnDestroy {
 
     ngAfterViewInit() {
         this.echart = echarts.init(this.echartElement.nativeElement);
+        this.getDataFromApiAndSetToChart();
+
         this.inputDatesForm.valueChanges.subscribe(({ from, to }) => {
             if (
                 this.filter.from !== this.inputDatesForm.value.from ||
@@ -53,11 +54,16 @@ export class DonutChartComponent implements AfterViewInit, OnDestroy {
                 this.getDataFromApiAndSetToChart();
             }
         });
-        this.getDataFromApiAndSetToChart();
     }
 
     getDataFromApiAndSetToChart() {
         this.echart.showLoading();
+        if (this.echartOptions.series[0].data.length > 0) {
+            this.echart.setOption(this.echartOptions);
+            this.echart.hideLoading();
+            return;
+        }
+
         this.apiService
             .getDataFromApi('/aggregate', this.requestBody)
             .pipe(takeUntil(this.destroyed$))

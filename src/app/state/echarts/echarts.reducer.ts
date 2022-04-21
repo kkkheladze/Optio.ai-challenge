@@ -23,7 +23,7 @@ export const initialState: EchartsStateModel = {
         },
     },
     HeatmapChart: {
-        data: [[0, 0, '-']],
+        data: [[]],
         range: {
             min: 0,
             max: 10,

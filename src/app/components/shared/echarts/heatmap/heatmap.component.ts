@@ -29,8 +29,8 @@ export class HeatmapComponent implements AfterViewInit {
         metrics: new FormControl(''),
     });
     echartOptions = HeatmapOptions;
-    private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
     maxDate: string = new Date().toISOString().slice(0, 7);
+    destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
     constructor(private store: Store<AppState>, private apiService: ApiService, private echartService: EchartService) {
         this.echartData$ = this.store.select(selectHeatmapChart);
@@ -46,6 +46,8 @@ export class HeatmapComponent implements AfterViewInit {
 
     ngAfterViewInit() {
         this.echart = echarts.init(this.echartElement.nativeElement);
+        this.getDataFromApiAndSetToChart();
+
         this.inputDatesForm.valueChanges.subscribe((form: { date: string; metrics: string }) => {
             const date = new Date(form.date);
             const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
@@ -57,15 +59,20 @@ export class HeatmapComponent implements AfterViewInit {
                 this.filter.metrics !== this.inputDatesForm.value.metrics
             ) {
                 this.store.dispatch(setHeatmapChartFilter({ date: form.date, from, to, metrics: form.metrics }));
-
                 this.getDataFromApiAndSetToChart();
             }
         });
-        this.getDataFromApiAndSetToChart();
     }
 
     getDataFromApiAndSetToChart() {
         this.echart.showLoading();
+
+        // Checks if we already have data to display it
+        if (this.echartOptions.series[0].data[0].length > 0) {
+            this.echart.setOption(this.echartOptions);
+            this.echart.hideLoading();
+            return;
+        }
         this.apiService
             .getDataFromApi('/aggregate', this.requestBody)
             .pipe(takeUntil(this.destroyed$))
