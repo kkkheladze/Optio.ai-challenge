@@ -12,6 +12,8 @@ import { DonutChartComponent } from './components/shared/echarts/donut-chart/don
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HeatmapComponent } from './components/shared/echarts/heatmap/heatmap.component';
+import { StoreModule } from '@ngrx/store';
+import { echartsReducer } from './state/echarts/echarts.reducer';
 
 @NgModule({
     declarations: [
@@ -23,7 +25,14 @@ import { HeatmapComponent } from './components/shared/echarts/heatmap/heatmap.co
         DonutChartComponent,
         HeatmapComponent,
     ],
-    imports: [BrowserModule, ReactiveFormsModule, HttpClientModule, AppRoutingModule, NgbModule],
+    imports: [
+        BrowserModule,
+        ReactiveFormsModule,
+        HttpClientModule,
+        AppRoutingModule,
+        NgbModule,
+        StoreModule.forRoot({ echarts: echartsReducer }),
+    ],
     providers: [],
     bootstrap: [AppComponent],
 })

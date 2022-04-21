@@ -63,5 +63,3 @@ const HeatmapOptions: any = {
     ],
 };
 export { DoughnutOptions, HeatmapOptions };
-const date = new Date('2018-01-31T00:00:00.000Z');
-date.getDay();

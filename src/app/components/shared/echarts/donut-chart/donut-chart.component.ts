@@ -1,13 +1,17 @@
 import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, ViewChild } from '@angular/core';
 import * as echarts from 'echarts';
 import { EChartsType } from 'echarts';
-import { HttpClient } from '@angular/common/http';
 import { AggregateCategoryRequest } from '../../../../interfaces/requests.interface';
 import { DoughnutOptions } from '../echart-options';
 import { ApiService } from '../../../../services/api.service';
-import { ReplaySubject, takeUntil } from 'rxjs';
+import { Observable, ReplaySubject, takeUntil } from 'rxjs';
 import { FormControl, FormGroup } from '@angular/forms';
 import { EchartService } from '../../../../services/echart.service';
+import { Store } from '@ngrx/store';
+import { selectDoughnutChart } from '../../../../state/echarts/echarts.selectors';
+import { AppState } from '../../../../state/app.state';
+import { DoughnutChartStateModel } from '../../../../state/echarts/echarts.model';
+import { setDoughnutChartData, setDoughnutChartFilter } from '../../../../state/echarts/echarts.actions';
 
 @Component({
     selector: 'app-donut-chart',
@@ -16,29 +20,29 @@ import { EchartService } from '../../../../services/echart.service';
 })
 export class DonutChartComponent implements AfterViewInit, OnDestroy {
     @ViewChild('echart') echartElement!: ElementRef;
+    public echartData$: Observable<DoughnutChartStateModel>;
     echart!: EChartsType;
-    echartOptions = DoughnutOptions;
+    requestBody!: AggregateCategoryRequest;
     inputDatesForm: FormGroup = new FormGroup({
         from: new FormControl('2018-01-01'),
         to: new FormControl('2018-01-31'),
     });
-    requestBody: AggregateCategoryRequest = {
-        dimension: 'parent-category',
-        types: ['spending', 'withdrawal'],
-        gteDate: this.inputDatesForm.value.from,
-        lteDate: this.inputDatesForm.value.to,
-        includeMetrics: ['volume'],
-    };
+    echartOptions = DoughnutOptions;
+
     private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
-    constructor(private http: HttpClient, private apiService: ApiService, private echartService: EchartService) {}
+    constructor(private store: Store<AppState>, private apiService: ApiService, private echartService: EchartService) {
+        this.echartData$ = this.store.select(selectDoughnutChart);
+        this.echartData$.subscribe(({ data, requestBody }) => {
+            this.echartOptions.series[0].data = data;
+            this.requestBody = requestBody;
+        });
+    }
 
     ngAfterViewInit() {
         this.echart = echarts.init(this.echartElement.nativeElement);
-        this.inputDatesForm.valueChanges.pipe(takeUntil(this.destroyed$)).subscribe((changedValue) => {
-            this.requestBody.gteDate = changedValue.from;
-            this.requestBody.lteDate = changedValue.to;
-
+        this.inputDatesForm.valueChanges.subscribe(({ from, to }) => {
+            this.store.dispatch(setDoughnutChartFilter({ from, to }));
             this.getDataFromApiAndSetToChart();
         });
         this.getDataFromApiAndSetToChart();
@@ -51,7 +55,9 @@ export class DonutChartComponent implements AfterViewInit, OnDestroy {
             .pipe(takeUntil(this.destroyed$))
             .subscribe(
                 (res) => {
-                    this.echartOptions.series[0].data = this.echartService.transformDoughnutChartData(res);
+                    this.store.dispatch(
+                        setDoughnutChartData({ data: this.echartService.transformDoughnutChartData(res) })
+                    );
                     this.echart.setOption(this.echartOptions);
                     this.echart.hideLoading();
                 },
