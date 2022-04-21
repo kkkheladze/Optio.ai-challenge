@@ -37,7 +37,7 @@ export class HeatmapComponent implements AfterViewInit {
         this.echartData$.subscribe(({ requestBody, data, filter, range }) => {
             this.requestBody = requestBody;
             this.filter = filter;
-            this.inputDatesForm.setValue({ ...filter });
+            this.inputDatesForm.setValue({ date: filter.date, metrics: filter.metrics });
             this.echartOptions.series[0].data = data;
             this.echartOptions.visualMap.min = range.min;
             this.echartOptions.visualMap.max = range.max;
@@ -67,12 +67,6 @@ export class HeatmapComponent implements AfterViewInit {
     getDataFromApiAndSetToChart() {
         this.echart.showLoading();
 
-        // Checks if we already have data to display it
-        if (this.echartOptions.series[0].data[0].length > 0) {
-            this.echart.setOption(this.echartOptions);
-            this.echart.hideLoading();
-            return;
-        }
         this.apiService
             .getDataFromApi('/aggregate', this.requestBody)
             .pipe(takeUntil(this.destroyed$))

@@ -58,11 +58,6 @@ export class DonutChartComponent implements AfterViewInit, OnDestroy {
 
     getDataFromApiAndSetToChart() {
         this.echart.showLoading();
-        if (this.echartOptions.series[0].data.length > 0) {
-            this.echart.setOption(this.echartOptions);
-            this.echart.hideLoading();
-            return;
-        }
 
         this.apiService
             .getDataFromApi('/aggregate', this.requestBody)
