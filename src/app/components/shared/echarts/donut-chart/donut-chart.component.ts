@@ -20,12 +20,13 @@ import { setDoughnutChartData, setDoughnutChartFilter } from '../../../../state/
 })
 export class DonutChartComponent implements AfterViewInit, OnDestroy {
     @ViewChild('echart') echartElement!: ElementRef;
-    public echartData$: Observable<DoughnutChartStateModel>;
+    echartData$: Observable<DoughnutChartStateModel>;
     echart!: EChartsType;
     requestBody!: AggregateCategoryRequest;
+    filter!: { from: string; to: string };
     inputDatesForm: FormGroup = new FormGroup({
-        from: new FormControl('2018-01-01'),
-        to: new FormControl('2018-01-31'),
+        from: new FormControl(''),
+        to: new FormControl(''),
     });
     echartOptions = DoughnutOptions;
 
@@ -33,8 +34,10 @@ export class DonutChartComponent implements AfterViewInit, OnDestroy {
 
     constructor(private store: Store<AppState>, private apiService: ApiService, private echartService: EchartService) {
         this.echartData$ = this.store.select(selectDoughnutChart);
-        this.echartData$.subscribe(({ data, requestBody }) => {
+        this.echartData$.subscribe(({ data, requestBody, filter }) => {
             this.echartOptions.series[0].data = data;
+            this.filter = filter;
+            this.inputDatesForm.setValue({ ...filter });
             this.requestBody = requestBody;
         });
     }
@@ -42,8 +45,13 @@ export class DonutChartComponent implements AfterViewInit, OnDestroy {
     ngAfterViewInit() {
         this.echart = echarts.init(this.echartElement.nativeElement);
         this.inputDatesForm.valueChanges.subscribe(({ from, to }) => {
-            this.store.dispatch(setDoughnutChartFilter({ from, to }));
-            this.getDataFromApiAndSetToChart();
+            if (
+                this.filter.from !== this.inputDatesForm.value.from ||
+                this.filter.to !== this.inputDatesForm.value.to
+            ) {
+                this.store.dispatch(setDoughnutChartFilter({ from, to }));
+                this.getDataFromApiAndSetToChart();
+            }
         });
         this.getDataFromApiAndSetToChart();
     }

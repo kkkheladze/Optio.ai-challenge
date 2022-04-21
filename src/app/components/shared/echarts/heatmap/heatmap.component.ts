@@ -3,11 +3,15 @@ import { EChartsType } from 'echarts';
 import { HeatmapOptions } from '../echart-options';
 import { AggregateCategoryRequest } from '../../../../interfaces/requests.interface';
 import { FormControl, FormGroup } from '@angular/forms';
-import { ReplaySubject, takeUntil } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { Observable, ReplaySubject, takeUntil } from 'rxjs';
 import { ApiService } from '../../../../services/api.service';
 import * as echarts from 'echarts';
 import { EchartService } from '../../../../services/echart.service';
+import { Store } from '@ngrx/store';
+import { HeatmapChartStateModel } from '../../../../state/echarts/echarts.model';
+import { selectHeatmapChart } from '../../../../state/echarts/echarts.selectors';
+import { AppState } from '../../../../state/app.state';
+import { setHeatmapChartData, setHeatmapChartFilter } from '../../../../state/echarts/echarts.actions';
 
 @Component({
     selector: 'app-heatmap',
@@ -16,39 +20,47 @@ import { EchartService } from '../../../../services/echart.service';
 })
 export class HeatmapComponent implements AfterViewInit {
     @ViewChild('echart') echartElement!: ElementRef;
+    echartData$: Observable<HeatmapChartStateModel>;
     echart!: EChartsType;
-    echartOptions = HeatmapOptions;
+    requestBody!: AggregateCategoryRequest;
+    filter!: { date: string; metrics: string };
     inputDatesForm: FormGroup = new FormGroup({
-        date: new FormControl('2018-01'),
-        metrics: new FormControl('volume'),
+        date: new FormControl(''),
+        metrics: new FormControl(''),
     });
-    requestBody: AggregateCategoryRequest = {
-        dimension: 'date',
-        types: ['spending', 'withdrawal'],
-        gteDate: this.inputDatesForm.value.date + '-01',
-        lteDate: this.inputDatesForm.value.date + '-31',
-        includeMetrics: [this.inputDatesForm.value.metrics],
-    };
+    echartOptions = HeatmapOptions;
+    private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
     maxDate: string = new Date().toISOString().slice(0, 7);
 
-    private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
-
-    constructor(private http: HttpClient, private apiService: ApiService, private echartService: EchartService) {}
+    constructor(private store: Store<AppState>, private apiService: ApiService, private echartService: EchartService) {
+        this.echartData$ = this.store.select(selectHeatmapChart);
+        this.echartData$.subscribe(({ requestBody, data, filter, range }) => {
+            this.requestBody = requestBody;
+            this.filter = filter;
+            this.inputDatesForm.setValue({ ...filter });
+            this.echartOptions.series[0].data = data;
+            this.echartOptions.visualMap.min = range.min;
+            this.echartOptions.visualMap.max = range.max;
+        });
+    }
 
     ngAfterViewInit() {
         this.echart = echarts.init(this.echartElement.nativeElement);
-        this.inputDatesForm.valueChanges
-            .pipe(takeUntil(this.destroyed$))
-            .subscribe((form: { date: string; metrics: string }) => {
-                const date = new Date(form.date);
-                const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+        this.inputDatesForm.valueChanges.subscribe((form: { date: string; metrics: string }) => {
+            const date = new Date(form.date);
+            const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+            const from = form.date + `-1`;
+            const to = form.date + `-${lastDay}`;
 
-                this.requestBody.gteDate = form.date + `-1`;
-                this.requestBody.lteDate = form.date + `-${lastDay}`;
-                this.requestBody.includeMetrics = [form.metrics];
+            if (
+                this.filter.date !== this.inputDatesForm.value.date ||
+                this.filter.metrics !== this.inputDatesForm.value.metrics
+            ) {
+                this.store.dispatch(setHeatmapChartFilter({ date: form.date, from, to, metrics: form.metrics }));
 
                 this.getDataFromApiAndSetToChart();
-            });
+            }
+        });
         this.getDataFromApiAndSetToChart();
     }
 
@@ -61,9 +73,13 @@ export class HeatmapComponent implements AfterViewInit {
                 (res) => {
                     const transformedData = this.echartService.transformHeatmapData(res);
 
-                    this.echartOptions.series[0].data = transformedData.data;
-                    this.echartOptions.visualMap.min = transformedData.min;
-                    this.echartOptions.visualMap.max = transformedData.max;
+                    this.store.dispatch(
+                        setHeatmapChartData({
+                            data: transformedData.data,
+                            range: { min: transformedData.min, max: transformedData.max },
+                        })
+                    );
+
                     this.echart.setOption(this.echartOptions);
                     this.echart.hideLoading();
                 },

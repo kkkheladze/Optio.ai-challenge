@@ -9,6 +9,20 @@ export interface DoughnutChartStateModel {
     };
     requestBody: AggregateCategoryRequest;
 }
+export interface HeatmapChartStateModel {
+    data: (number | string)[][];
+    range: {
+        min: number;
+        max: number;
+    };
+    filter: {
+        date: string;
+        metrics: string;
+    };
+    requestBody: AggregateCategoryRequest;
+}
+
 export interface EchartsStateModel {
     DoughnutChart: DoughnutChartStateModel;
+    HeatmapChart: HeatmapChartStateModel;
 }
