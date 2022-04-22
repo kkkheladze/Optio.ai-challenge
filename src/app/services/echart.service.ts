@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AggregateCategoryResponse } from '../interfaces/responses.interface';
 import { DoughnutChartData } from '../interfaces/echart-data';
-import { setDoughnutChartData } from '../state/echarts/echarts.actions';
+import { setDoughnutChartData, setHeatmapChartData } from '../state/echarts/echarts.actions';
 import { EChartsType } from 'echarts';
 import { ApiService } from './api.service';
 import { Store } from '@ngrx/store';
@@ -50,8 +50,19 @@ export class EchartService {
             .getDataFromApi('/aggregate', requestBody)
             .toPromise()
             .then((res) => {
-                if (type === EchartType.DOUGHNUT_CHART) {
+                if (type === EchartType.DOUGHNUT_CHART)
                     this.store.dispatch(setDoughnutChartData({ data: this.transformDoughnutChartData(res!) }));
+                else {
+                    const transformedData = this.transformHeatmapData(res!);
+                    this.store.dispatch(
+                        setHeatmapChartData({
+                            data: transformedData.data,
+                            range: {
+                                min: transformedData.min,
+                                max: transformedData.max,
+                            },
+                        })
+                    );
                 }
                 echart.setOption(<ECBasicOption>echartOptions);
                 echart.hideLoading();

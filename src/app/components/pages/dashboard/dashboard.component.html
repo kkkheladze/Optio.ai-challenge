@@ -12,7 +12,13 @@
     </div>
     <div class="col-xl-6 col my-3">
         <div class="card">
-            <app-heatmap></app-heatmap>
+            <app-echart
+                [title]="'Spending Heatmap'"
+                [echartOptions]="heatmapChartOptions"
+                [echartType]="ECHART_TYPE.HEATMAP_CHART"
+                [form]="heatmapChartForm"
+                [requestBody]="heatmapChartRequestBody"
+            ></app-echart>
         </div>
     </div>
 </div>

@@ -28,15 +28,15 @@ export class DashboardComponent implements OnInit {
     heatmapChartOptions = HeatmapOptions;
     heatmapChartRequestBody!: AggregateCategoryRequest;
     heatmapChartForm = new FormGroup({
-        date: new FormControl(''),
-        metrics: new FormControl(''),
+        date: new FormControl('2018-01'),
+        metrics: new FormControl('volume'),
     });
 
     constructor(private store: Store<AppState>) {
         this.echarts$ = this.store.select(selectEcharts);
         this.echarts$.subscribe((state) => {
             this.doughnutChartRequestBody = state.DoughnutChart.requestBody;
-            this.heatmapChartOptions = state.HeatmapChart.requestBody;
+            this.heatmapChartRequestBody = state.HeatmapChart.requestBody;
         });
     }
     ngOnInit() {}

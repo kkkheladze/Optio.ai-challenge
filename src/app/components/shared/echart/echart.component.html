@@ -1,25 +1,32 @@
 <div id="wrapper">
     <h2>{{ title }}</h2>
     <div #echart id="echart"></div>
-    <form [formGroup]="form" class="mt-4 d-flex gap-2 align-items-end flex-wrap" (change)="getAndSetDataToChart()">
-        <ng-container *ngIf="echartType === ECHART_TYPE.DOUGHNUT_CHART; else heatmapChartForm">
+    <ng-container *ngIf="echartType === ECHART_TYPE.DOUGHNUT_CHART; else heatmapChartForm">
+        <form [formGroup]="form" class="mt-4 d-flex gap-2 align-items-end flex-wrap" (change)="getAndSetDataToChart()">
             <div class="d-flex flex-column">
                 <label for="fromDate">From: </label>
-                <input type="date" id="fromDate" formControlName="from" [max]="(echartData$ | async)?.filter!.to" />
+                <input type="date" id="fromDate" formControlName="from" />
             </div>
             <div class="d-flex flex-column">
                 <label for="fromDate">To: </label>
-                <input type="date" id="toDate" formControlName="to" [min]="(echartData$ | async)?.filter!.from" />
+                <input type="date" id="toDate" formControlName="to" />
             </div>
-        </ng-container>
-    </form>
+        </form>
+    </ng-container>
 </div>
 
 <ng-template #heatmapChartForm>
-    <div class="d-flex flex-column">
-        <label for="fromDate">From: </label>
-    </div>
-    <div class="d-flex flex-column">
-        <label for="fromDate">To: </label>
-    </div>
+    <form [formGroup]="form" class="mt-4 d-flex gap-2 align-items-end flex-wrap" (change)="getAndSetDataToChart()">
+        <div class="d-flex flex-column">
+            <label for="metrics">View: </label>
+            <select id="metrics" formControlName="metrics" style="height: 1.8em">
+                <option value="volume">Volume</option>
+                <option value="quantity">Quantity</option>
+            </select>
+        </div>
+        <div class="d-flex flex-column">
+            <label for="date">Choose month: </label>
+            <input type="month" id="date" formControlName="date" [max]="maxDate" />
+        </div>
+    </form>
 </ng-template>
