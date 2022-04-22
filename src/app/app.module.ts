@@ -8,7 +8,6 @@ import { TableComponent } from './components/pages/table/table.component';
 import { NotFoundComponent } from './components/pages/not-found/not-found.component';
 import { NavComponent } from './components/nav/nav.component';
 import { HttpClientModule } from '@angular/common/http';
-import { DonutChartComponent } from './components/shared/echarts/donut-chart/donut-chart.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HeatmapComponent } from './components/shared/echarts/heatmap/heatmap.component';
@@ -16,6 +15,7 @@ import { StoreModule } from '@ngrx/store';
 import { echartsReducer } from './state/echarts/echarts.reducer';
 import { environment } from '../environments/environment';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { EchartComponent } from './components/shared/echart/echart.component';
 
 @NgModule({
     declarations: [
@@ -24,8 +24,8 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
         TableComponent,
         NotFoundComponent,
         NavComponent,
-        DonutChartComponent,
         HeatmapComponent,
+        EchartComponent,
     ],
     imports: [
         BrowserModule,

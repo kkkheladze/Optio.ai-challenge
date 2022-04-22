@@ -1,12 +1,19 @@
 import { Injectable } from '@angular/core';
 import { AggregateCategoryResponse } from '../interfaces/responses.interface';
 import { DoughnutChartData } from '../interfaces/echart-data';
+import { setDoughnutChartData } from '../state/echarts/echarts.actions';
+import { EChartsType } from 'echarts';
+import { ApiService } from './api.service';
+import { Store } from '@ngrx/store';
+import { AppState } from '../state/app.state';
+import { ECBasicOption } from 'echarts/types/dist/shared';
+import { EchartType } from '../enums/echart-type';
 
 @Injectable({
     providedIn: 'root',
 })
 export class EchartService {
-    constructor() {}
+    constructor(private apiService: ApiService, private store: Store<AppState>) {}
 
     transformHeatmapData(res: AggregateCategoryResponse) {
         let biggestData = 0;
@@ -34,5 +41,24 @@ export class EchartService {
         return res.data.map((data) => {
             return { value: data.volume, name: data.dimension };
         });
+    }
+
+    getDataFromApiAndSetToChart(echart: EChartsType, requestBody: object, echartOptions: object, type: EchartType) {
+        echart.showLoading();
+
+        this.apiService
+            .getDataFromApi('/aggregate', requestBody)
+            .toPromise()
+            .then((res) => {
+                if (type === EchartType.DOUGHNUT_CHART) {
+                    this.store.dispatch(setDoughnutChartData({ data: this.transformDoughnutChartData(res!) }));
+                }
+                echart.setOption(<ECBasicOption>echartOptions);
+                echart.hideLoading();
+            })
+            .catch((error) => {
+                alert(error.message);
+                echart.hideLoading();
+            });
     }
 }

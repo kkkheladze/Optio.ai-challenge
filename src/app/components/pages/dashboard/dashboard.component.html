@@ -1,7 +1,13 @@
 <div class="row">
     <div class="col-xl-6 col my-3">
         <div class="card">
-            <app-donut-chart></app-donut-chart>
+            <app-echart
+                [title]="'Spending Category'"
+                [echartOptions]="doughnutChartOptions"
+                [echartType]="ECHART_TYPE.DOUGHNUT_CHART"
+                [form]="doughnutChartForm"
+                [requestBody]="doughnutChartRequestBody"
+            ></app-echart>
         </div>
     </div>
     <div class="col-xl-6 col my-3">

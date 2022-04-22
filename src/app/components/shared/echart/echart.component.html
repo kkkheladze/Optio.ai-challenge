@@ -1,0 +1,25 @@
+<div id="wrapper">
+    <h2>{{ title }}</h2>
+    <div #echart id="echart"></div>
+    <form [formGroup]="form" class="mt-4 d-flex gap-2 align-items-end flex-wrap" (change)="getAndSetDataToChart()">
+        <ng-container *ngIf="echartType === ECHART_TYPE.DOUGHNUT_CHART; else heatmapChartForm">
+            <div class="d-flex flex-column">
+                <label for="fromDate">From: </label>
+                <input type="date" id="fromDate" formControlName="from" [max]="(echartData$ | async)?.filter!.to" />
+            </div>
+            <div class="d-flex flex-column">
+                <label for="fromDate">To: </label>
+                <input type="date" id="toDate" formControlName="to" [min]="(echartData$ | async)?.filter!.from" />
+            </div>
+        </ng-container>
+    </form>
+</div>
+
+<ng-template #heatmapChartForm>
+    <div class="d-flex flex-column">
+        <label for="fromDate">From: </label>
+    </div>
+    <div class="d-flex flex-column">
+        <label for="fromDate">To: </label>
+    </div>
+</ng-template>

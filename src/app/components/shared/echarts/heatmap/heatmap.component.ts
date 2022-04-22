@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { EChartsType } from 'echarts';
-import { HeatmapOptions } from '../echart-options';
+import { HeatmapOptions } from '../../echart/echart-options';
 import { AggregateCategoryRequest } from '../../../../interfaces/requests.interface';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Observable, ReplaySubject, takeUntil } from 'rxjs';
