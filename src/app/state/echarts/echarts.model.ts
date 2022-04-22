@@ -1,5 +1,5 @@
 import { DoughnutChartData } from '../../interfaces/echart-data';
-import { AggregateCategoryRequest } from '../../interfaces/requests.interface';
+import { AggregateRequest } from '../../interfaces/requests.interface';
 
 export interface DoughnutChartStateModel {
     data: DoughnutChartData[];
@@ -7,7 +7,7 @@ export interface DoughnutChartStateModel {
         from: string;
         to: string;
     };
-    requestBody: AggregateCategoryRequest;
+    requestBody: AggregateRequest;
 }
 export interface HeatmapChartStateModel {
     data: (number | string)[][];
@@ -19,7 +19,7 @@ export interface HeatmapChartStateModel {
         date: string;
         metrics: string;
     };
-    requestBody: AggregateCategoryRequest;
+    requestBody: AggregateRequest;
 }
 
 export interface EchartsStateModel {

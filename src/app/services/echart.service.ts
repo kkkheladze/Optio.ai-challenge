@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AggregateCategoryResponse } from '../interfaces/responses.interface';
+import { AggregateResponse } from '../interfaces/responses.interface';
 import { DoughnutChartData } from '../interfaces/echart-data';
 import { setDoughnutChartData, setHeatmapChartData } from '../state/echarts/echarts.actions';
 import { EChartsType } from 'echarts';
@@ -15,7 +15,7 @@ import { EchartType } from '../enums/echart-type';
 export class EchartService {
     constructor(private apiService: ApiService, private store: Store<AppState>) {}
 
-    transformHeatmapData(res: AggregateCategoryResponse) {
+    transformHeatmapData(res: AggregateResponse) {
         let biggestData = 0;
         let smallestData = 0;
 
@@ -37,7 +37,7 @@ export class EchartService {
         return { data: transformedArray, min: smallestData, max: biggestData };
     }
 
-    transformDoughnutChartData(res: AggregateCategoryResponse): DoughnutChartData[] {
+    transformDoughnutChartData(res: AggregateResponse): DoughnutChartData[] {
         return res.data.map((data) => {
             return { value: data.volume, name: data.dimension };
         });

@@ -1,4 +1,4 @@
-export interface AggregateCategoryResponse {
+export interface AggregateResponse {
     data: [
         {
             dimension: string;
@@ -6,6 +6,17 @@ export interface AggregateCategoryResponse {
             volume: number;
             quantity: number;
             type: string;
+        }
+    ];
+    success: boolean;
+}
+
+export interface FindResponse {
+    data: [
+        {
+            dimension: string;
+            date: string;
+            volume: number;
         }
     ];
     success: boolean;

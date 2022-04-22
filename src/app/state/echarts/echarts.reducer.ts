@@ -30,14 +30,14 @@ export const initialState: EchartsStateModel = {
         },
         filter: {
             date: '2018-01',
-            metrics: 'volume',
+            metrics: 'quantity',
         },
         requestBody: {
             dimension: 'date',
             types: ['spending', 'withdrawal'],
             gteDate: '2018-01-01',
             lteDate: '2018-01-31',
-            includeMetrics: ['volume'],
+            includeMetrics: ['quantity'],
         },
     },
 };

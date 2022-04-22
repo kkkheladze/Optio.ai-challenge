@@ -7,7 +7,7 @@ import { AppState } from '../../../state/app.state';
 import { selectEcharts } from '../../../state/echarts/echarts.selectors';
 import { Observable } from 'rxjs';
 import { EchartsStateModel } from '../../../state/echarts/echarts.model';
-import { AggregateCategoryRequest } from '../../../interfaces/requests.interface';
+import { AggregateRequest } from '../../../interfaces/requests.interface';
 
 @Component({
     selector: 'app-dashboard',
@@ -19,17 +19,17 @@ export class DashboardComponent implements OnInit {
     ECHART_TYPE = EchartType;
 
     doughnutChartOptions = DoughnutOptions;
-    doughnutChartRequestBody!: AggregateCategoryRequest;
+    doughnutChartRequestBody!: AggregateRequest;
     doughnutChartForm = new FormGroup({
-        from: new FormControl('2018-01-01'),
-        to: new FormControl('2018-01-31'),
+        from: new FormControl(''),
+        to: new FormControl(''),
     });
 
     heatmapChartOptions = HeatmapOptions;
-    heatmapChartRequestBody!: AggregateCategoryRequest;
+    heatmapChartRequestBody!: AggregateRequest;
     heatmapChartForm = new FormGroup({
-        date: new FormControl('2018-01'),
-        metrics: new FormControl('volume'),
+        date: new FormControl(''),
+        metrics: new FormControl(''),
     });
 
     constructor(private store: Store<AppState>) {

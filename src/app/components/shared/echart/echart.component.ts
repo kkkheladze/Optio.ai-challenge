@@ -2,7 +2,7 @@ import { AfterViewInit, Component, ElementRef, HostListener, Input, ViewChild } 
 import { Observable } from 'rxjs';
 import * as echarts from 'echarts';
 import { EChartsType } from 'echarts';
-import { AggregateCategoryRequest } from '../../../interfaces/requests.interface';
+import { AggregateRequest } from '../../../interfaces/requests.interface';
 import { FormGroup } from '@angular/forms';
 import { EchartType } from '../../../enums/echart-type';
 import { EchartService } from '../../../services/echart.service';
@@ -21,7 +21,7 @@ export class EchartComponent implements AfterViewInit {
     @Input('echartType') echartType!: EchartType;
     @Input('echartOptions') echartOptions: any;
     @Input('form') form!: FormGroup;
-    @Input('requestBody') requestBody!: AggregateCategoryRequest;
+    @Input('requestBody') requestBody!: AggregateRequest;
     @ViewChild('echart') echartElement!: ElementRef;
     ECHART_TYPE = EchartType;
     echartData$!: Observable<any>; // TODO: try to use this as a type <HeatmapChartStateModel | DoughnutChartStateModel>
