@@ -6,6 +6,8 @@ import {
     setHeatmapChartFilter,
     setLineChartData,
     setLineChartFilter,
+    setTableChartData,
+    setTableChartFilter,
 } from './echarts.actions';
 import { EchartsStateModel } from './echarts.model';
 
@@ -58,6 +60,20 @@ export const initialState: EchartsStateModel = {
             pageIndex: 0,
             pageSize: 50,
             includes: ['dimension', 'date', 'volume'],
+        },
+    },
+    TableChart: {
+        data: [],
+        filter: {
+            from: '2018-01-01',
+            to: '2018-01-31',
+        },
+        requestBody: {
+            dimension: 'merchant',
+            types: ['none'],
+            gteDate: '2018-01-01',
+            lteDate: '2018-01-31',
+            includeMetrics: ['volume'],
         },
     },
 };
@@ -131,6 +147,28 @@ export const echartsReducer = createReducer(
         LineChart: {
             ...state.LineChart,
             data: data,
+        },
+    })),
+    on(setTableChartFilter, (state, { from, to }) => ({
+        ...state,
+        tableChart: {
+            ...state.TableChart,
+            filter: {
+                from,
+                to,
+            },
+            requestBody: {
+                ...state.TableChart.requestBody,
+                gteDate: from,
+                lteDate: to,
+            },
+        },
+    })),
+    on(setTableChartData, (state, { data }) => ({
+        ...state,
+        TableChart: {
+            ...state.TableChart,
+            data,
         },
     }))
 );

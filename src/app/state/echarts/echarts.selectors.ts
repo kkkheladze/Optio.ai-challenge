@@ -9,3 +9,5 @@ export const selectDoughnutChart = createSelector(selectEcharts, (state: Echarts
 export const selectHeatmapChart = createSelector(selectEcharts, (state: EchartsStateModel) => state.HeatmapChart);
 
 export const selectLineChart = createSelector(selectEcharts, (state: EchartsStateModel) => state.LineChart);
+
+export const selectTableChart = createSelector(selectEcharts, (state: EchartsStateModel) => state.TableChart);

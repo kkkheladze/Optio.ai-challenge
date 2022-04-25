@@ -1,4 +1,4 @@
-import { DoughnutChartData, LineChartData } from '../../interfaces/echart-data';
+import { DoughnutChartData, LineChartData, TableChartData } from '../../interfaces/echart-data';
 import { AggregateRequest, FindRequest } from '../../interfaces/requests.interface';
 
 export interface DoughnutChartStateModel {
@@ -31,8 +31,18 @@ export interface LineChartStateModel {
     requestBody: FindRequest;
 }
 
+export interface TableChartStateModel {
+    data: TableChartData[];
+    filter: {
+        from: string;
+        to: string;
+    };
+    requestBody: AggregateRequest;
+}
+
 export interface EchartsStateModel {
     DoughnutChart: DoughnutChartStateModel;
     HeatmapChart: HeatmapChartStateModel;
     LineChart: LineChartStateModel;
+    TableChart: TableChartStateModel;
 }

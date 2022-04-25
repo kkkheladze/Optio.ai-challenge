@@ -9,3 +9,8 @@ export interface LineChartData {
     smooth: boolean;
     name: string;
 }
+
+export interface TableChartData {
+    name: string;
+    volume: number;
+}
