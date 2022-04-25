@@ -3,7 +3,7 @@ export interface AggregateRequest {
     types: string[];
     gteDate: string;
     lteDate: string;
-    includeMetrics: string[];
+    includeMetrics?: string[];
 }
 
 export interface FindRequest extends AggregateRequest {
@@ -11,4 +11,5 @@ export interface FindRequest extends AggregateRequest {
     sortDirection: string;
     pageIndex: number;
     pageSize: number;
+    includes: string[];
 }

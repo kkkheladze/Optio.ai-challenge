@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
-import { AggregateResponse } from '../interfaces/responses.interface';
-import { DoughnutChartData } from '../interfaces/echart-data';
-import { setDoughnutChartData, setHeatmapChartData } from '../state/echarts/echarts.actions';
+import { AggregateResponse, FindResponse } from '../interfaces/responses.interface';
+import { DoughnutChartData, LineChartData } from '../interfaces/echart-data';
+import { setDoughnutChartData, setHeatmapChartData, setLineChartData } from '../state/echarts/echarts.actions';
 import { EChartsType } from 'echarts';
 import { ApiService } from './api.service';
 import { Store } from '@ngrx/store';
 import { AppState } from '../state/app.state';
 import { ECBasicOption } from 'echarts/types/dist/shared';
 import { EchartType } from '../enums/echart-type';
+import { FormGroup } from '@angular/forms';
 
 @Injectable({
     providedIn: 'root',
@@ -43,33 +44,108 @@ export class EchartService {
         });
     }
 
-    getDataFromApiAndSetToChart(echart: EChartsType, requestBody: object, echartOptions: object, type: EchartType) {
-        echart.showLoading();
+    transformLineChartData(res: FindResponse) {
+        const categories = res.data.entities.map((entity) => {
+            return entity.dimension;
+        });
+        const uniqueCategories = new Set(categories);
+        const transformedData: LineChartData[] = [];
 
-        this.apiService
-            .getDataFromApi('/aggregate', requestBody)
-            .toPromise()
-            .then((res) => {
-                if (type === EchartType.DOUGHNUT_CHART)
-                    this.store.dispatch(setDoughnutChartData({ data: this.transformDoughnutChartData(res!) }));
-                else {
-                    const transformedData = this.transformHeatmapData(res!);
-                    this.store.dispatch(
-                        setHeatmapChartData({
-                            data: transformedData.data,
-                            range: {
-                                min: transformedData.min,
-                                max: transformedData.max,
-                            },
-                        })
-                    );
+        for (let category of uniqueCategories) {
+            const data: LineChartData = { name: category, smooth: true, type: 'line', data: [] };
+            res.data.entities.forEach((entity) => {
+                if (entity.dimension === category) {
+                    data.data.push(Math.floor(entity.volume));
                 }
-                echart.setOption(<ECBasicOption>echartOptions);
-                echart.hideLoading();
-            })
-            .catch((error) => {
-                alert(error.message);
-                echart.hideLoading();
             });
+            transformedData.push(data);
+        }
+        return transformedData;
+    }
+
+    async getDataFromApiAndSetToChart(
+        echart: EChartsType,
+        requestBody: any,
+        echartOptions: object,
+        type: EchartType,
+        endpoint: string
+    ) {
+        echart.showLoading();
+        let dataFromApi: any;
+
+        if (type === EchartType.LINE_CHART) {
+            dataFromApi = await this.getEntireDataFromApiForLineChart(endpoint, requestBody);
+        } else {
+            dataFromApi = await this.apiService.getDataFromApi(endpoint, requestBody);
+        }
+
+        try {
+            this.setDataToState(type, dataFromApi!);
+        } catch (e) {
+            alert(e);
+            echart.hideLoading();
+        }
+
+        echart.setOption(<ECBasicOption>echartOptions);
+        echart.hideLoading();
+    }
+
+    setDataToState(type: EchartType, res: AggregateResponse | FindResponse) {
+        switch (type) {
+            case EchartType.DOUGHNUT_CHART:
+                const transformedDoughnutData = this.transformDoughnutChartData(res as AggregateResponse);
+                this.store.dispatch(setDoughnutChartData({ data: transformedDoughnutData }));
+                break;
+
+            case EchartType.HEATMAP_CHART:
+                const transformedHeatmapData = this.transformHeatmapData(res as AggregateResponse);
+                this.store.dispatch(
+                    setHeatmapChartData({
+                        data: transformedHeatmapData.data,
+                        range: {
+                            min: transformedHeatmapData.min,
+                            max: transformedHeatmapData.max,
+                        },
+                    })
+                );
+                break;
+
+            case EchartType.LINE_CHART:
+                const transformedLineData = this.transformLineChartData(res as FindResponse);
+                this.store.dispatch(setLineChartData({ data: transformedLineData }));
+
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    getFirstAndLastDayOfMonth(form: FormGroup) {
+        const formValue = form.value;
+        const date = new Date(formValue.date);
+        const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+        const from = formValue.date + `-1`;
+        const to = formValue.date + `-${lastDay}`;
+
+        return { from, to };
+    }
+
+    // Recursive function to get the whole data from paginated server
+    async getEntireDataFromApiForLineChart(endpoint: string, requestBody: any) {
+        const results = (await this.apiService.getDataFromApi(endpoint, requestBody)) as FindResponse;
+
+        if (results.data.entities.length > 0) {
+            const newBody = JSON.parse(JSON.stringify(requestBody));
+            newBody.pageIndex = requestBody.pageIndex + 1;
+            const res: any = (await this.getEntireDataFromApiForLineChart(endpoint, newBody)) as FindResponse;
+
+            res.data.entities.forEach((entity: any) => {
+                results.data.entities.push(entity);
+            });
+            return results;
+        } else {
+            return results;
+        }
     }
 }

@@ -2,14 +2,23 @@ import { AfterViewInit, Component, ElementRef, HostListener, Input, ViewChild } 
 import { Observable } from 'rxjs';
 import * as echarts from 'echarts';
 import { EChartsType } from 'echarts';
-import { AggregateRequest } from '../../../interfaces/requests.interface';
+import { AggregateRequest, FindRequest } from '../../../interfaces/requests.interface';
 import { FormGroup } from '@angular/forms';
 import { EchartType } from '../../../enums/echart-type';
 import { EchartService } from '../../../services/echart.service';
 import { Store } from '@ngrx/store';
 import { AppState } from '../../../state/app.state';
-import { selectDoughnutChart, selectHeatmapChart } from '../../../state/echarts/echarts.selectors';
-import { setDoughnutChartFilter, setHeatmapChartFilter } from '../../../state/echarts/echarts.actions';
+import { selectDoughnutChart, selectHeatmapChart, selectLineChart } from '../../../state/echarts/echarts.selectors';
+import {
+    setDoughnutChartFilter,
+    setHeatmapChartFilter,
+    setLineChartFilter,
+} from '../../../state/echarts/echarts.actions';
+import {
+    DoughnutChartStateModel,
+    HeatmapChartStateModel,
+    LineChartStateModel,
+} from '../../../state/echarts/echarts.model';
 
 @Component({
     selector: 'app-echart',
@@ -21,10 +30,11 @@ export class EchartComponent implements AfterViewInit {
     @Input('echartType') echartType!: EchartType;
     @Input('echartOptions') echartOptions: any;
     @Input('form') form!: FormGroup;
-    @Input('requestBody') requestBody!: AggregateRequest;
+    @Input('requestBody') requestBody!: AggregateRequest | FindRequest;
+    @Input('endpoint') endpoint!: string;
     @ViewChild('echart') echartElement!: ElementRef;
     ECHART_TYPE = EchartType;
-    echartData$!: Observable<any>; // TODO: try to use this as a type <HeatmapChartStateModel | DoughnutChartStateModel>
+    echartData$!: Observable<HeatmapChartStateModel | DoughnutChartStateModel | LineChartStateModel>;
     echart!: EChartsType;
     filter!: any;
     maxDate: string = new Date().toISOString().slice(0, 7);
@@ -32,41 +42,62 @@ export class EchartComponent implements AfterViewInit {
     constructor(private store: Store<AppState>, private echartService: EchartService) {}
 
     ngAfterViewInit() {
-        if (this.echartType === EchartType.DOUGHNUT_CHART) this.echartData$ = this.store.select(selectDoughnutChart);
-        else if (this.echartType === EchartType.HEATMAP_CHART) this.echartData$ = this.store.select(selectHeatmapChart);
-        this.echartData$.subscribe(({ data, requestBody, filter, range }) => {
-            this.echartOptions.series[0].data = data;
-            this.filter = filter;
-            this.requestBody = requestBody;
-            if (this.echartType === EchartType.DOUGHNUT_CHART) this.form.setValue({ from: filter.from, to: filter.to });
-            else {
-                this.echartOptions.visualMap.min = range.min;
-                this.echartOptions.visualMap.max = range.max;
-                this.form.setValue({ date: filter.date, metrics: filter.metrics });
-            }
-        });
-
+        this.setDataFromStateToComponentVariables();
         this.echart = echarts.init(this.echartElement.nativeElement);
         this.getAndSetDataToChart();
     }
 
     getAndSetDataToChart() {
-        if (this.echartType === EchartType.DOUGHNUT_CHART)
-            this.store.dispatch(setDoughnutChartFilter({ ...this.form.value }));
-        else {
-            const formValue = this.form.value;
-            const date = new Date(formValue.date);
-            const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
-            const from = formValue.date + `-1`;
-            const to = formValue.date + `-${lastDay}`;
-            this.store.dispatch(setHeatmapChartFilter({ ...this.form.value, from, to }));
+        switch (this.echartType) {
+            case EchartType.DOUGHNUT_CHART:
+                this.store.dispatch(setDoughnutChartFilter({ ...this.form.value }));
+                break;
+            case EchartType.HEATMAP_CHART:
+                const { from, to } = this.echartService.getFirstAndLastDayOfMonth(this.form);
+                this.store.dispatch(setHeatmapChartFilter({ ...this.form.value, from, to }));
+                break;
+            case EchartType.LINE_CHART:
+                this.store.dispatch(setLineChartFilter({ ...this.form.value }));
+                break;
+            default:
+                break;
         }
+
         this.echartService.getDataFromApiAndSetToChart(
             this.echart,
             this.requestBody,
             this.echartOptions,
-            this.echartType
+            this.echartType,
+            this.endpoint
         );
+    }
+
+    setDataFromStateToComponentVariables() {
+        if (this.echartType === EchartType.DOUGHNUT_CHART) this.echartData$ = this.store.select(selectDoughnutChart);
+        else if (this.echartType === EchartType.HEATMAP_CHART) this.echartData$ = this.store.select(selectHeatmapChart);
+        else if (this.echartType === EchartType.LINE_CHART) this.echartData$ = this.store.select(selectLineChart);
+
+        this.echartData$.subscribe((props) => {
+            switch (this.echartType) {
+                case EchartType.DOUGHNUT_CHART:
+                    this.echartOptions.series[0].data = props.data;
+                    break;
+                case EchartType.HEATMAP_CHART:
+                    this.echartOptions.series[0].data = props.data;
+                    const range = (props as HeatmapChartStateModel).range;
+                    this.echartOptions.visualMap.min = range.min;
+                    this.echartOptions.visualMap.max = range.max;
+                    break;
+                case EchartType.LINE_CHART:
+                    this.echartOptions.series = props.data;
+                    break;
+                default:
+                    break;
+            }
+
+            this.form.setValue({ ...props.filter });
+            this.requestBody = props.requestBody;
+        });
     }
 
     // Without this, echart canvas is not resizing on the viewport change.

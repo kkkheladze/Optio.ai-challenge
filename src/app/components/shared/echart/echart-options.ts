@@ -62,4 +62,34 @@ const HeatmapOptions: any = {
         },
     ],
 };
+
+export const LineChartOptions: any = {
+    xAxis: {
+        type: 'category',
+        data: (() => {
+            const arr: string[] = [];
+            for (let i = 1; i <= 31; i++) {
+                arr.push(`${String(i)}`);
+            }
+            return arr;
+        })(),
+    },
+    tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+            type: 'cross',
+        },
+    },
+
+    yAxis: {
+        type: 'value',
+    },
+    series: [
+        {
+            data: [],
+            type: 'line',
+            smooth: true,
+        },
+    ],
+};
 export { DoughnutOptions, HeatmapOptions };

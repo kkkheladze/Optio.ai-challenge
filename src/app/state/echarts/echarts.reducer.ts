@@ -4,6 +4,8 @@ import {
     setDoughnutChartFilter,
     setHeatmapChartData,
     setHeatmapChartFilter,
+    setLineChartData,
+    setLineChartFilter,
 } from './echarts.actions';
 import { EchartsStateModel } from './echarts.model';
 
@@ -38,6 +40,24 @@ export const initialState: EchartsStateModel = {
             gteDate: '2018-01-01',
             lteDate: '2018-01-31',
             includeMetrics: ['quantity'],
+        },
+    },
+    LineChart: {
+        data: [],
+        filter: {
+            from: '2018-01-01',
+            to: '2018-01-31',
+        },
+        requestBody: {
+            dimension: 'category',
+            types: ['income'],
+            gteDate: '2018-01-01',
+            lteDate: '2018-01-31',
+            sortBy: 'date',
+            sortDirection: 'asc',
+            pageIndex: 0,
+            pageSize: 50,
+            includes: ['dimension', 'date', 'volume'],
         },
     },
 };
@@ -89,6 +109,28 @@ export const echartsReducer = createReducer(
             ...state.HeatmapChart,
             data,
             range,
+        },
+    })),
+    on(setLineChartFilter, (state, { from, to }) => ({
+        ...state,
+        LineChart: {
+            ...state.LineChart,
+            filter: {
+                from,
+                to,
+            },
+            requestBody: {
+                ...state.LineChart.requestBody,
+                gteDate: from,
+                lteDate: to,
+            },
+        },
+    })),
+    on(setLineChartData, (state, { data }) => ({
+        ...state,
+        LineChart: {
+            ...state.LineChart,
+            data: data,
         },
     }))
 );

@@ -12,12 +12,9 @@ export interface AggregateResponse {
 }
 
 export interface FindResponse {
-    data: [
-        {
-            dimension: string;
-            date: string;
-            volume: number;
-        }
-    ];
+    data: {
+        total: number;
+        entities: { volume: number; dimension: string; date: string }[];
+    };
     success: boolean;
 }

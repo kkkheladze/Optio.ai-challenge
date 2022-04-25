@@ -1,5 +1,5 @@
-import { DoughnutChartData } from '../../interfaces/echart-data';
-import { AggregateRequest } from '../../interfaces/requests.interface';
+import { DoughnutChartData, LineChartData } from '../../interfaces/echart-data';
+import { AggregateRequest, FindRequest } from '../../interfaces/requests.interface';
 
 export interface DoughnutChartStateModel {
     data: DoughnutChartData[];
@@ -22,7 +22,17 @@ export interface HeatmapChartStateModel {
     requestBody: AggregateRequest;
 }
 
+export interface LineChartStateModel {
+    data: LineChartData[];
+    filter: {
+        from: string;
+        to: string;
+    };
+    requestBody: FindRequest;
+}
+
 export interface EchartsStateModel {
     DoughnutChart: DoughnutChartStateModel;
     HeatmapChart: HeatmapChartStateModel;
+    LineChart: LineChartStateModel;
 }
