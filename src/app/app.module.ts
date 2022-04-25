@@ -15,9 +15,10 @@ import { echartsReducer } from './state/echarts/echarts.reducer';
 import { environment } from '../environments/environment';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { EchartComponent } from './components/shared/echart/echart.component';
+import { TableChartComponent } from './components/shared/table-chart/table-chart.component';
 
 @NgModule({
-    declarations: [AppComponent, DashboardComponent, TableComponent, NotFoundComponent, NavComponent, EchartComponent],
+    declarations: [AppComponent, DashboardComponent, TableComponent, NotFoundComponent, NavComponent, EchartComponent, TableChartComponent],
     imports: [
         BrowserModule,
         ReactiveFormsModule,
