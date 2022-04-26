@@ -1,5 +1,13 @@
 <form [formGroup]="form" class="mb-2 d-flex gap-2 align-items-end flex-wrap">
     <div class="d-flex flex-column">
+        <label for="fromChart">From Chart: </label>
+        <select name="fromChart" id="fromChart" style="height: 1.7rem" formControlName="fromChart">
+            <option value="spendingCategory">Spending Category</option>
+            <option value="incomeDynamics">Income Dynamics</option>
+            <option value="spendingHeatmap">Spending Heatmap</option>
+        </select>
+    </div>
+    <div class="d-flex flex-column">
         <label for="fromDate">From: </label>
         <input type="date" id="fromDate" formControlName="from" [max]="form.value.to" />
     </div>
@@ -22,8 +30,8 @@
     <div class="d-flex flex-column">
         <label for="sortDirection">Sort Direction: </label>
         <select name="sortDirection" id="sortDirection" style="height: 1.7rem" formControlName="sortDirection">
-            <option value="asc">Asc</option>
-            <option value="desc">Desc</option>
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
         </select>
     </div>
     <button type="submit" class="btn-success btn" (click)="getAndSetDataToState()">Submit</button>
@@ -34,19 +42,18 @@
     styleClass="p-datatable-sm"
     [rows]="10"
     [paginator]="true"
-    [loading]="tableData.length === 0"
+    [loading]="loading"
     [rowsPerPageOptions]="[10, 25, 50]"
     [showCurrentPageReport]="true"
     currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
 >
-    >
     <ng-template pTemplate="header">
         <tr>
             <th>Dimension</th>
             <th>Date</th>
             <th>Quantity</th>
-            <th>Volume (GEL)</th>
-            <th>Average (GEL)</th>
+            <th>Volume</th>
+            <th>Average</th>
             <th>Difference quantity</th>
             <th>Difference volume</th>
         </tr>
@@ -56,10 +63,10 @@
             <td>{{ data.dimension | titlecase }}</td>
             <td>{{ data.date | date }}</td>
             <td>{{ data.quantity | number }}</td>
-            <td>{{ data.volume | number }}</td>
-            <td>{{ data.average | number }}</td>
-            <td>{{ data.differenceQuantity | number }}</td>
-            <td>{{ data.differenceVolume | number }}</td>
+            <td>{{ data.volume | number }} ლ</td>
+            <td>{{ data.average | number }} ლ</td>
+            <td>{{ data.differenceQuantity | number }} ლ</td>
+            <td>{{ data.differenceVolume | number }} ლ</td>
         </tr>
     </ng-template>
 </p-table>

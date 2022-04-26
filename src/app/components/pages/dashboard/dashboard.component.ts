@@ -4,10 +4,10 @@ import { EchartType } from '../../../enums/echart-type';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { AppState } from '../../../state/app.state';
-import { selectEcharts } from '../../../state/dashboard/dashboard.selectors';
 import { Observable } from 'rxjs';
 import { AggregateRequest, FindRequest } from '../../../interfaces/requests.interface';
 import { DashboardStateModel } from '../../../state/dashboard/dashboard.model';
+import { selectDashboard } from '../../../state/dashboard/dashboard.selectors';
 
 @Component({
     selector: 'app-dashboard',
@@ -39,7 +39,7 @@ export class DashboardComponent implements OnInit {
         to: new FormControl(''),
     });
     constructor(private store: Store<AppState>) {
-        this.echarts$ = this.store.select(selectEcharts);
+        this.echarts$ = this.store.select(selectDashboard);
         this.echarts$.subscribe((state) => {
             this.doughnutChartRequestBody = state.DoughnutChart.requestBody;
             this.heatmapChartRequestBody = state.HeatmapChart.requestBody;

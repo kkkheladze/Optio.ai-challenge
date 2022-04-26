@@ -18,6 +18,7 @@ import { EchartComponent } from './components/shared/echart/echart.component';
 import { TableChartComponent } from './components/shared/table-chart/table-chart.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TableModule } from 'primeng/table';
+import { tableReducer } from './state/table/table.reducer';
 
 @NgModule({
     declarations: [
@@ -36,7 +37,7 @@ import { TableModule } from 'primeng/table';
         HttpClientModule,
         AppRoutingModule,
         NgbModule,
-        StoreModule.forRoot({ echarts: dashboardReducer }),
+        StoreModule.forRoot({ Dashboard: dashboardReducer, Table: tableReducer }),
         StoreDevtoolsModule.instrument({ name: 'Optio.ai Challenge', maxAge: 25, logOnly: environment.production }),
         TableModule,
     ],
