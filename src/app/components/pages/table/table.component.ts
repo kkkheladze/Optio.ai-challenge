@@ -8,6 +8,7 @@ import { TableStateModel } from '../../../state/table/table.model';
 import { selectTable } from '../../../state/table/table.selectors';
 import { setTableData, setTableFilter } from '../../../state/table/table.actions';
 import { TableDataInterface } from '../../../interfaces/table-data.interface';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
     selector: 'app-table',
@@ -27,17 +28,51 @@ export class TableComponent implements OnInit {
     requestBody!: any;
     tableData!: TableDataInterface[];
 
-    constructor(private store: Store<AppState>, private fb: FormBuilder, private echartService: EchartService) {
+    constructor(
+        private store: Store<AppState>,
+        private fb: FormBuilder,
+        private echartService: EchartService,
+        private router: Router,
+        private route: ActivatedRoute
+    ) {
         this.table$ = this.store.select(selectTable);
     }
 
     async ngOnInit() {
         this.setDataFromStateToComponentVariables();
+        this.route.queryParams.subscribe((params) => {
+            if (Object.keys(params).length !== 0) {
+                this.form.setValue({
+                    ...this.form.value,
+                    ...params,
+                });
+
+                const { from, to, fromChart, sortBy, sortDirection } = this.form.value;
+
+                const reqBody = this.getRequestBodyBasedOnSelectedChart(fromChart);
+
+                this.requestBody = {
+                    ...this.requestBody,
+                    ...reqBody,
+                    sortBy,
+                    sortDirection,
+                    gteDate: from,
+                    lteDate: to,
+                };
+            }
+        });
         await this.getAndSetDataToState();
     }
 
     async getAndSetDataToState() {
         this.loading = true;
+
+        this.router.navigate([], {
+            queryParams: {
+                ...this.form.value,
+            },
+            queryParamsHandling: 'merge',
+        });
         const { sortBy, sortDirection, from, to, fromChart } = this.form.value;
 
         const reqBody = this.getRequestBodyBasedOnSelectedChart(fromChart);
