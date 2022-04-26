@@ -9,6 +9,7 @@ import { selectTable } from '../../../state/table/table.selectors';
 import { setTableData, setTableFilter } from '../../../state/table/table.actions';
 import { TableDataInterface } from '../../../interfaces/table-data.interface';
 import { ActivatedRoute, Router } from '@angular/router';
+import { UtilsService } from '../../../services/utils.service';
 
 @Component({
     selector: 'app-table',
@@ -33,60 +34,28 @@ export class TableComponent implements OnInit {
         private fb: FormBuilder,
         private echartService: EchartService,
         private router: Router,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        private utils: UtilsService
     ) {
         this.table$ = this.store.select(selectTable);
     }
 
     async ngOnInit() {
-        this.setDataFromStateToComponentVariables();
-        this.route.queryParams.subscribe((params) => {
-            const editableParams = JSON.parse(JSON.stringify(params));
-            if (Object.keys(editableParams).length > 0) {
-                if (editableParams.hasOwnProperty('date')) {
-                    const { from, to } = this.getFirstAndLastDayOfMonth(editableParams.date);
-                    editableParams.from = from;
-                    editableParams.to = to;
-                    delete editableParams.date;
-                }
-
-                this.form.setValue({
-                    ...this.form.value,
-                    ...editableParams,
-                });
-
-                console.log(this.form.value);
-
-                const { from, to, fromChart, sortBy, sortDirection } = this.form.value;
-
-                const reqBody = this.getRequestBodyBasedOnSelectedChart(fromChart);
-
-                this.requestBody = {
-                    ...this.requestBody,
-                    ...reqBody,
-                    sortBy,
-                    sortDirection,
-                    gteDate: from,
-                    lteDate: to,
-                };
-            }
-        });
+        this.subscribeToStore();
+        this.handleQueryParams();
         await this.getAndSetDataToState();
     }
 
     async getAndSetDataToState() {
         this.loading = true;
-
-        this.router.navigate([], {
+        await this.router.navigate([], {
             queryParams: {
                 ...this.form.value,
             },
             queryParamsHandling: 'merge',
         });
         const { sortBy, sortDirection, from, to, fromChart } = this.form.value;
-
-        const reqBody = this.getRequestBodyBasedOnSelectedChart(fromChart);
-
+        const reqBody = this.utils.getRequestBodyBasedOnSelectedChart(fromChart);
         this.requestBody = {
             ...this.requestBody,
             ...reqBody,
@@ -103,29 +72,7 @@ export class TableComponent implements OnInit {
         this.loading = false;
     }
 
-    getRequestBodyBasedOnSelectedChart(chart: string) {
-        switch (chart) {
-            case 'spendingCategory':
-                return {
-                    dimension: 'parent-category',
-                    types: ['spending', 'withdrawal'],
-                };
-            case 'spendingHeatmap':
-                return {
-                    dimension: 'date',
-                    types: ['spending', 'withdrawal'],
-                };
-            case 'incomeDynamics':
-                return {
-                    dimension: 'category',
-                    types: ['income'],
-                };
-            default:
-                return null;
-        }
-    }
-
-    setDataFromStateToComponentVariables() {
+    subscribeToStore() {
         this.table$ = this.store.select(selectTable);
         this.table$.subscribe(({ filter, data, requestBody }) => {
             this.form.setValue({ ...filter });
@@ -134,12 +81,35 @@ export class TableComponent implements OnInit {
         });
     }
 
-    getFirstAndLastDayOfMonth(dateString: string) {
-        const date = new Date(dateString);
-        const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
-        const from = dateString + `-01`;
-        const to = dateString + `-${lastDay}`;
+    handleQueryParams() {
+        this.route.queryParams.subscribe((params) => {
+            const editableParams = JSON.parse(JSON.stringify(params)); // deep clone object
+            if (Object.keys(editableParams).length === 0) return;
 
-        return { from, to };
+            if (editableParams.hasOwnProperty('date')) {
+                const { from, to } = this.utils.getFirstAndLastDayOfMonth(editableParams.date);
+                delete editableParams.date;
+                editableParams.from = from;
+                editableParams.to = to;
+            }
+
+            this.form.setValue({
+                ...this.form.value,
+                ...editableParams,
+            });
+
+            const { from, to, fromChart, sortBy, sortDirection } = this.form.value;
+
+            const reqBody = this.utils.getRequestBodyBasedOnSelectedChart(fromChart);
+
+            this.requestBody = {
+                ...this.requestBody,
+                ...reqBody,
+                sortBy,
+                sortDirection,
+                gteDate: from,
+                lteDate: to,
+            };
+        });
     }
 }
