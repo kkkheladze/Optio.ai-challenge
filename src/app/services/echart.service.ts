@@ -138,7 +138,7 @@ export class EchartService {
         if (results.data.entities.length > 0) {
             const newBody = JSON.parse(JSON.stringify(requestBody));
             newBody.pageIndex = requestBody.pageIndex + 1;
-            const res: any = (await this.getEntireDataFromApiForLineChart(endpoint, newBody)) as FindResponse;
+            const res = (await this.getEntireDataFromApiForLineChart(endpoint, newBody)) as FindResponse;
 
             res.data.entities.forEach((entity: any) => {
                 results.data.entities.push(entity);

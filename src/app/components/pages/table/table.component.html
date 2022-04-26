@@ -1,1 +1,63 @@
-<p>table works!</p>
+<form [formGroup]="form" class="mb-2 d-flex gap-2 align-items-end flex-wrap">
+    <div class="d-flex flex-column">
+        <label for="fromDate">From: </label>
+        <input type="date" id="fromDate" formControlName="from" [max]="form.value.to" />
+    </div>
+    <div class="d-flex flex-column">
+        <label for="fromDate">To: </label>
+        <input type="date" id="toDate" formControlName="to" [min]="form.value.from" />
+    </div>
+    <div class="d-flex flex-column">
+        <label for="sortBy">Sort By: </label>
+        <select name="sortBy" id="sortBy" style="height: 1.7rem" formControlName="sortBy">
+            <option value="dimension">Dimension</option>
+            <option value="date">Date</option>
+            <option value="quantity">Quantity</option>
+            <option value="volume">Volume</option>
+            <option value="average">Average</option>
+            <option value="differenceAverage">Difference Average</option>
+            <option value="differenceQuantity">Difference Quantity</option>
+        </select>
+    </div>
+    <div class="d-flex flex-column">
+        <label for="sortDirection">Sort Direction: </label>
+        <select name="sortDirection" id="sortDirection" style="height: 1.7rem" formControlName="sortDirection">
+            <option value="asc">Asc</option>
+            <option value="desc">Desc</option>
+        </select>
+    </div>
+    <button type="submit" class="btn-success btn"  (click)="getAndSetDataToState()">
+        Submit
+    </button>
+</form>
+<p-table
+    [value]="tableData"
+    responsiveLayout="scroll"
+    styleClass="p-datatable-sm"
+    [rows]="15"
+    [paginator]="true"
+    [loading]="tableData.length === 0"
+>
+    <ng-template pTemplate="header">
+        <tr>
+            <th>Dimension</th>
+            <th>Date</th>
+            <th>Quantity</th>
+            <th>Volume (GEL)</th>
+            <th>Average (GEL)</th>
+            <th>Difference quantity</th>
+            <th>Difference volume</th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-data>
+        <tr>
+            <td>{{ data.dimension | titlecase }}</td>
+            <td>{{ data.date | date }}</td>
+            <td>{{ data.quantity | number }}</td>
+            <td>{{ data.volume | number }}</td>
+            <td>{{ data.average | number }}</td>
+            <td>{{ data.differenceQuantity | number }}</td>
+            <td>{{ data.differenceVolume | number }}</td>
+        </tr>
+    </ng-template>
+</p-table>
