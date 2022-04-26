@@ -151,7 +151,7 @@ export const echartsReducer = createReducer(
     })),
     on(setTableChartFilter, (state, { from, to }) => ({
         ...state,
-        tableChart: {
+        TableChart: {
             ...state.TableChart,
             filter: {
                 from,

@@ -7,7 +7,8 @@ import { selectTableChart } from '../../../state/echarts/echarts.selectors';
 import { TableChartStateModel } from '../../../state/echarts/echarts.model';
 import { TableChartData } from '../../../interfaces/echart-data';
 import { AggregateResponse } from '../../../interfaces/responses.interface';
-import { setTableChartData } from '../../../state/echarts/echarts.actions';
+import { setTableChartData, setTableChartFilter } from '../../../state/echarts/echarts.actions';
+import { FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
     selector: 'app-table-chart',
@@ -18,29 +19,44 @@ export class TableChartComponent implements OnInit {
     tableChart$: Observable<TableChartStateModel>;
     requestBody: any;
     merchants!: TableChartData[];
+    form: FormGroup;
 
-    constructor(private store: Store<AppState>, private apiService: ApiService) {
+    constructor(private store: Store<AppState>, private apiService: ApiService, private fb: FormBuilder) {
         this.tableChart$ = this.store.select(selectTableChart);
+        this.form = fb.group({
+            from: fb.control(''),
+            to: fb.control(''),
+        });
     }
 
     async ngOnInit() {
         this.tableChart$.subscribe(({ requestBody, filter, data }) => {
             this.requestBody = requestBody;
+            this.form.setValue({
+                ...filter,
+            });
         });
         await this.getAndSetDataToState();
     }
 
     async getAndSetDataToState() {
-        const res: AggregateResponse = (await this.apiService.getDataFromApi(
+        this.store.dispatch(setTableChartFilter({ ...this.form.value }));
+
+        const response: AggregateResponse = (await this.apiService.getDataFromApi(
             'aggregate',
             this.requestBody
         )) as AggregateResponse;
-        const data = res.data
+
+        const data = this.transformDataFromApi(response);
+        this.store.dispatch(setTableChartData({ data }));
+    }
+
+    transformDataFromApi(res: AggregateResponse) {
+        return res.data
             .sort((a, b) => b.volume - a.volume)
             .slice(0, 20)
             .map((merchant) => {
-                return { volume: merchant.volume, name: merchant.dimension };
+                return { volume: Math.floor(merchant.volume), name: merchant.dimension };
             });
-        this.store.dispatch(setTableChartData({ data }));
     }
 }

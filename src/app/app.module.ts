@@ -16,17 +16,29 @@ import { environment } from '../environments/environment';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { EchartComponent } from './components/shared/echart/echart.component';
 import { TableChartComponent } from './components/shared/table-chart/table-chart.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { TableModule } from 'primeng/table';
 
 @NgModule({
-    declarations: [AppComponent, DashboardComponent, TableComponent, NotFoundComponent, NavComponent, EchartComponent, TableChartComponent],
+    declarations: [
+        AppComponent,
+        DashboardComponent,
+        TableComponent,
+        NotFoundComponent,
+        NavComponent,
+        EchartComponent,
+        TableChartComponent,
+    ],
     imports: [
         BrowserModule,
+        BrowserAnimationsModule,
         ReactiveFormsModule,
         HttpClientModule,
         AppRoutingModule,
         NgbModule,
         StoreModule.forRoot({ echarts: echartsReducer }),
         StoreDevtoolsModule.instrument({ name: 'Optio.ai Challenge', maxAge: 25, logOnly: environment.production }),
+        TableModule,
     ],
     providers: [],
     bootstrap: [AppComponent],

@@ -1,5 +1,5 @@
-<div class="row">
-    <div class="col-xl-6 col my-3">
+<div class="row flex-grow-1">
+    <div class="col-xl-6 col-12 my-3">
         <div class="card">
             <app-echart
                 [title]="'Spending Category'"
@@ -11,7 +11,7 @@
             ></app-echart>
         </div>
     </div>
-    <div class="col-xl-6 col my-3">
+    <div class="col-xl-6 col-12 my-3">
         <div class="card">
             <app-echart
                 [title]="'Spending Heatmap'"
@@ -23,7 +23,7 @@
             ></app-echart>
         </div>
     </div>
-    <div class="col-xl-12 col my-3">
+    <div class="col-12 col-xl-7 my-3">
         <div class="card">
             <app-echart
                 [title]="'Income Dynamics'"
@@ -35,7 +35,8 @@
             ></app-echart>
         </div>
     </div>
-    <div class="col-xl-12 col my-3">
+
+    <div class="col-xl-5 col-12 my-3">
         <div class="card">
             <app-table-chart></app-table-chart>
         </div>

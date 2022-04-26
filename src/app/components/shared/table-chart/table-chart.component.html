@@ -1,14 +1,32 @@
-<p-table [value]="(tableChart$ | async)?.data" responsiveLayout="scroll">
+<p-table
+    [value]="(tableChart$ | async)!.data"
+    responsiveLayout="scroll"
+    styleClass="p-datatable-sm"
+    [rows]="7"
+    [paginator]="true"
+>
+    <ng-template pTemplate="caption"> Popular Merchants </ng-template>
     <ng-template pTemplate="header">
         <tr>
             <th>Name</th>
-            <th>Volume (GEL)</th>
+            <th class="text-end">Volume (GEL)</th>
         </tr>
     </ng-template>
     <ng-template pTemplate="body" let-merchant>
         <tr>
-            <td>{{ merchant.name }}</td>
-            <td>{{ merchant.volume }}</td>
+            <td>{{ merchant.name | titlecase }}</td>
+            <td class="text-end">{{ merchant.volume | number }} ლ</td>
         </tr>
     </ng-template>
 </p-table>
+
+<form [formGroup]="form" class="mt-4 d-flex gap-2 align-items-end flex-wrap" (change)="getAndSetDataToState()">
+    <div class="d-flex flex-column">
+        <label for="fromDate">From: </label>
+        <input type="date" id="fromDate" formControlName="from" />
+    </div>
+    <div class="d-flex flex-column">
+        <label for="fromDate">To: </label>
+        <input type="date" id="toDate" formControlName="to" />
+    </div>
+</form>
