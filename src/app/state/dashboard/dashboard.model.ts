@@ -40,7 +40,7 @@ export interface TableChartStateModel {
     requestBody: AggregateRequest;
 }
 
-export interface EchartsStateModel {
+export interface DashboardStateModel {
     DoughnutChart: DoughnutChartStateModel;
     HeatmapChart: HeatmapChartStateModel;
     LineChart: LineChartStateModel;

@@ -8,17 +8,17 @@ import { EchartType } from '../../../enums/echart-type';
 import { EchartService } from '../../../services/echart.service';
 import { Store } from '@ngrx/store';
 import { AppState } from '../../../state/app.state';
-import { selectDoughnutChart, selectHeatmapChart, selectLineChart } from '../../../state/echarts/echarts.selectors';
+import { selectDoughnutChart, selectHeatmapChart, selectLineChart } from '../../../state/dashboard/dashboard.selectors';
 import {
     setDoughnutChartFilter,
     setHeatmapChartFilter,
     setLineChartFilter,
-} from '../../../state/echarts/echarts.actions';
+} from '../../../state/dashboard/dashboard.actions';
 import {
     DoughnutChartStateModel,
     HeatmapChartStateModel,
     LineChartStateModel,
-} from '../../../state/echarts/echarts.model';
+} from '../../../state/dashboard/dashboard.model';
 
 @Component({
     selector: 'app-echart',

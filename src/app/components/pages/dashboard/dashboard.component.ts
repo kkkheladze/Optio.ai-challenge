@@ -4,10 +4,10 @@ import { EchartType } from '../../../enums/echart-type';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { AppState } from '../../../state/app.state';
-import { selectEcharts } from '../../../state/echarts/echarts.selectors';
+import { selectEcharts } from '../../../state/dashboard/dashboard.selectors';
 import { Observable } from 'rxjs';
-import { EchartsStateModel } from '../../../state/echarts/echarts.model';
 import { AggregateRequest, FindRequest } from '../../../interfaces/requests.interface';
+import { DashboardStateModel } from '../../../state/dashboard/dashboard.model';
 
 @Component({
     selector: 'app-dashboard',
@@ -15,7 +15,7 @@ import { AggregateRequest, FindRequest } from '../../../interfaces/requests.inte
     styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent implements OnInit {
-    echarts$!: Observable<EchartsStateModel>;
+    echarts$!: Observable<DashboardStateModel>;
     ECHART_TYPE = EchartType;
 
     doughnutChartOptions = DoughnutOptions;

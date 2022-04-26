@@ -26,18 +26,20 @@
             <option value="desc">Desc</option>
         </select>
     </div>
-    <button type="submit" class="btn-success btn"  (click)="getAndSetDataToState()">
-        Submit
-    </button>
+    <button type="submit" class="btn-success btn" (click)="getAndSetDataToState()">Submit</button>
 </form>
 <p-table
     [value]="tableData"
     responsiveLayout="scroll"
     styleClass="p-datatable-sm"
-    [rows]="15"
+    [rows]="10"
     [paginator]="true"
     [loading]="tableData.length === 0"
+    [rowsPerPageOptions]="[10, 25, 50]"
+    [showCurrentPageReport]="true"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
 >
+    >
     <ng-template pTemplate="header">
         <tr>
             <th>Dimension</th>

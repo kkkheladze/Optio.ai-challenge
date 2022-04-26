@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AggregateResponse, FindResponse } from '../interfaces/responses.interface';
 import { DoughnutChartData, LineChartData } from '../interfaces/echart-data';
-import { setDoughnutChartData, setHeatmapChartData, setLineChartData } from '../state/echarts/echarts.actions';
+import { setDoughnutChartData, setHeatmapChartData, setLineChartData } from '../state/dashboard/dashboard.actions';
 import { EChartsType } from 'echarts';
 import { ApiService } from './api.service';
 import { Store } from '@ngrx/store';

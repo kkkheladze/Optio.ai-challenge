@@ -10,10 +10,10 @@ import { EchartService } from '../../../services/echart.service';
 export class TableComponent implements OnInit {
     form: FormGroup;
     requestBody = {
-        dimension: 'category',
-        types: ['income'],
+        dimension: 'parent-category',
+        types: ['spending', 'withdrawal'],
         gteDate: '2018-01-01',
-        lteDate: '2018-02-31',
+        lteDate: '2018-01-31',
         sortBy: 'date',
         sortDirection: 'asc',
         pageIndex: 0,

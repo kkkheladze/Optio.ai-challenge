@@ -8,10 +8,10 @@ import {
     setLineChartFilter,
     setTableChartData,
     setTableChartFilter,
-} from './echarts.actions';
-import { EchartsStateModel } from './echarts.model';
+} from './dashboard.actions';
+import { DashboardStateModel } from './dashboard.model';
 
-export const initialState: EchartsStateModel = {
+export const initialState: DashboardStateModel = {
     DoughnutChart: {
         data: [],
         filter: {
@@ -78,7 +78,7 @@ export const initialState: EchartsStateModel = {
     },
 };
 
-export const echartsReducer = createReducer(
+export const dashboardReducer = createReducer(
     initialState,
     on(setDoughnutChartFilter, (state, { from, to }) => ({
         ...state,

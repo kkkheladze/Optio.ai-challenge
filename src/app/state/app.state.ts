@@ -1,5 +1,5 @@
-import { EchartsStateModel } from './echarts/echarts.model';
+import { DashboardStateModel } from './dashboard/dashboard.model';
 
 export interface AppState {
-    echarts: EchartsStateModel;
+    echarts: DashboardStateModel;
 }

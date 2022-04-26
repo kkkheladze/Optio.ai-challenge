@@ -11,7 +11,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ReactiveFormsModule } from '@angular/forms';
 import { StoreModule } from '@ngrx/store';
-import { echartsReducer } from './state/echarts/echarts.reducer';
+import { dashboardReducer } from './state/dashboard/dashboard.reducer';
 import { environment } from '../environments/environment';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { EchartComponent } from './components/shared/echart/echart.component';
@@ -36,7 +36,7 @@ import { TableModule } from 'primeng/table';
         HttpClientModule,
         AppRoutingModule,
         NgbModule,
-        StoreModule.forRoot({ echarts: echartsReducer }),
+        StoreModule.forRoot({ echarts: dashboardReducer }),
         StoreDevtoolsModule.instrument({ name: 'Optio.ai Challenge', maxAge: 25, logOnly: environment.production }),
         TableModule,
     ],
