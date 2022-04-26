@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, Input, OnInit, ViewChild } from '@angular/core';
 import { Observable } from 'rxjs';
 import * as echarts from 'echarts';
 import { EChartsType } from 'echarts';
@@ -25,7 +25,7 @@ import {
     templateUrl: './echart.component.html',
     styleUrls: ['./echart.component.scss'],
 })
-export class EchartComponent implements AfterViewInit {
+export class EchartComponent implements OnInit, AfterViewInit {
     @Input('title') title!: string;
     @Input('echartType') echartType!: EchartType;
     @Input('echartOptions') echartOptions: any;
@@ -41,8 +41,11 @@ export class EchartComponent implements AfterViewInit {
 
     constructor(private store: Store<AppState>, private echartService: EchartService) {}
 
-    ngAfterViewInit() {
+    ngOnInit() {
         this.setDataFromStateToComponentVariables();
+    }
+
+    ngAfterViewInit() {
         this.echart = echarts.init(this.echartElement.nativeElement);
         this.getAndSetDataToChart();
     }

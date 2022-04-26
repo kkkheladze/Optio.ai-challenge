@@ -125,7 +125,7 @@ export class EchartService {
         const formValue = form.value;
         const date = new Date(formValue.date);
         const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
-        const from = formValue.date + `-1`;
+        const from = formValue.date + `-01`;
         const to = formValue.date + `-${lastDay}`;
 
         return { from, to };

@@ -41,11 +41,21 @@ export class TableComponent implements OnInit {
     async ngOnInit() {
         this.setDataFromStateToComponentVariables();
         this.route.queryParams.subscribe((params) => {
-            if (Object.keys(params).length !== 0) {
+            const editableParams = JSON.parse(JSON.stringify(params));
+            if (Object.keys(editableParams).length > 0) {
+                if (editableParams.hasOwnProperty('date')) {
+                    const { from, to } = this.getFirstAndLastDayOfMonth(editableParams.date);
+                    editableParams.from = from;
+                    editableParams.to = to;
+                    delete editableParams.date;
+                }
+
                 this.form.setValue({
                     ...this.form.value,
-                    ...params,
+                    ...editableParams,
                 });
+
+                console.log(this.form.value);
 
                 const { from, to, fromChart, sortBy, sortDirection } = this.form.value;
 
@@ -122,5 +132,14 @@ export class TableComponent implements OnInit {
             this.requestBody = requestBody;
             this.tableData = data;
         });
+    }
+
+    getFirstAndLastDayOfMonth(dateString: string) {
+        const date = new Date(dateString);
+        const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+        const from = dateString + `-01`;
+        const to = dateString + `-${lastDay}`;
+
+        return { from, to };
     }
 }
