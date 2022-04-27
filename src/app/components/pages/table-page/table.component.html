@@ -34,8 +34,11 @@
             <option value="desc">Descending</option>
         </select>
     </div>
-    <button type="submit" class="btn-success btn" (click)="getAndSetDataToState()">Submit</button>
+    <button type="submit" class="btn-success btn" (click)="submitSearch()" [disabled]="!this.form.touched">
+        Submit
+    </button>
 </form>
+
 <p-table
     [value]="tableData"
     responsiveLayout="scroll"

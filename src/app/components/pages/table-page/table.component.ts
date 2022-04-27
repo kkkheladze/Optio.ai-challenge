@@ -43,12 +43,15 @@ export class TableComponent implements OnInit {
     }
 
     async ngOnInit() {
+        this.form.valueChanges.subscribe(() => {
+            this.form.markAsTouched();
+        });
         this.subscribeToStore();
         this.handleQueryParams();
-        await this.getAndSetDataToState();
+        await this.submitSearch();
     }
 
-    async getAndSetDataToState() {
+    async submitSearch() {
         this.loading = true;
         await this.router.navigate([], {
             queryParams: {
@@ -72,6 +75,8 @@ export class TableComponent implements OnInit {
         const response = await this.apiService.getEntireDataFromApiForLineChart('find', this.requestBody);
         await this.store.dispatch(setTableData({ data: response.data.entities }));
         this.loading = false;
+
+        this.form.markAsUntouched();
     }
 
     subscribeToStore() {

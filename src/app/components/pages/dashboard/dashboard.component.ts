@@ -11,7 +11,6 @@ import { DashboardStateModel } from '../../../state/dashboard/dashboard.model';
     styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent {
-    echarts$!: Observable<DashboardStateModel>;
     ECHART_TYPE = EchartType;
 
     doughnutChartOptions = DoughnutOptions;
