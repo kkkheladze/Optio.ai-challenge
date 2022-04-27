@@ -27,7 +27,7 @@ export const initialState: DashboardStateModel = {
         },
     },
     HeatmapChart: {
-        data: [[]],
+        data: [],
         range: {
             min: 0,
             max: 10,

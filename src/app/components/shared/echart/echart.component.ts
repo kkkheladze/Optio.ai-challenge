@@ -19,6 +19,10 @@ import {
     HeatmapChartStateModel,
     LineChartStateModel,
 } from '../../../state/dashboard/dashboard.model';
+import { ECBasicOption } from 'echarts/types/dist/shared';
+import { ApiService } from '../../../services/api.service';
+import { AggregateResponse, FindResponse } from '../../../interfaces/responses.interface';
+import { UtilsService } from '../../../services/utils.service';
 
 @Component({
     selector: 'app-echart',
@@ -30,76 +34,90 @@ export class EchartComponent implements OnInit, AfterViewInit {
     @Input('echartType') echartType!: EchartType;
     @Input('echartOptions') echartOptions: any;
     @Input('form') form!: FormGroup;
-    @Input('requestBody') requestBody!: AggregateRequest | FindRequest;
     @Input('endpoint') endpoint!: string;
     @ViewChild('echart') echartElement!: ElementRef;
+    requestBody!: AggregateRequest | FindRequest;
     ECHART_TYPE = EchartType;
     echartData$!: Observable<HeatmapChartStateModel | DoughnutChartStateModel | LineChartStateModel>;
     echart!: EChartsType;
-    filter!: any;
     maxDate: string = new Date().toISOString().slice(0, 7);
 
-    constructor(private store: Store<AppState>, private echartService: EchartService) {}
+    constructor(
+        private store: Store<AppState>,
+        private echartService: EchartService,
+        private apiService: ApiService,
+        private utilsService: UtilsService
+    ) {}
 
     ngOnInit() {
-        this.setDataFromStateToComponentVariables();
+        if (this.echartType === EchartType.DOUGHNUT_CHART) this.subToDoughnutChart();
+        else if (this.echartType === EchartType.HEATMAP_CHART) this.subToHeatmapChart();
+        else if (this.echartType === EchartType.LINE_CHART) this.subToLineChart();
     }
 
-    ngAfterViewInit() {
+    async ngAfterViewInit() {
         this.echart = echarts.init(this.echartElement.nativeElement);
-        this.getAndSetDataToChart();
+        await this.submitSearch();
     }
 
-    getAndSetDataToChart() {
-        switch (this.echartType) {
-            case EchartType.DOUGHNUT_CHART:
+    async submitSearch() {
+        this.echart.showLoading();
+
+        try {
+            if (this.echartType === EchartType.DOUGHNUT_CHART) {
                 this.store.dispatch(setDoughnutChartFilter({ ...this.form.value }));
-                break;
-            case EchartType.HEATMAP_CHART:
-                const { from, to } = this.echartService.getFirstAndLastDayOfMonth(this.form);
-                this.store.dispatch(setHeatmapChartFilter({ ...this.form.value, from, to }));
-                break;
-            case EchartType.LINE_CHART:
+
+                const data = await this.apiService.getDataFromApi(this.endpoint, this.requestBody);
+                this.echartService.setDoughnutDataToState(data as AggregateResponse);
+            } else if (this.echartType === EchartType.LINE_CHART) {
                 this.store.dispatch(setLineChartFilter({ ...this.form.value }));
-                break;
-            default:
-                break;
+
+                const data = await this.apiService.getEntireDataFromApiForLineChart('find', this.requestBody);
+                this.echartService.setLineDataToState(data as FindResponse);
+            } else {
+                const { from, to } = this.utilsService.getFirstAndLastDayOfMonth(this.form.value.date);
+
+                this.store.dispatch(setHeatmapChartFilter({ ...this.form.value, from, to }));
+
+                const data = await this.apiService.getDataFromApi(this.endpoint, this.requestBody);
+                this.echartService.setHeatmapDataToState(data as AggregateResponse);
+            }
+        } catch (e) {
+            alert(e);
+            this.echart.hideLoading();
         }
 
-        this.echartService.getDataFromApiAndSetToChart(
-            this.echart,
-            this.requestBody,
-            this.echartOptions,
-            this.echartType,
-            this.endpoint
-        );
+        this.echart.setOption(<ECBasicOption>this.echartOptions);
+        this.echart.hideLoading();
     }
 
-    setDataFromStateToComponentVariables() {
-        if (this.echartType === EchartType.DOUGHNUT_CHART) this.echartData$ = this.store.select(selectDoughnutChart);
-        else if (this.echartType === EchartType.HEATMAP_CHART) this.echartData$ = this.store.select(selectHeatmapChart);
-        else if (this.echartType === EchartType.LINE_CHART) this.echartData$ = this.store.select(selectLineChart);
+    subToDoughnutChart() {
+        this.echartData$ = this.store.select(selectDoughnutChart);
+        this.echartData$.subscribe(({ data, filter, requestBody }) => {
+            this.echartOptions.series[0].data = data;
+            this.form.setValue({ ...filter });
+            this.requestBody = requestBody;
+        });
+    }
 
+    subToHeatmapChart() {
+        this.echartData$ = this.store.select(selectHeatmapChart);
         this.echartData$.subscribe((props) => {
-            switch (this.echartType) {
-                case EchartType.DOUGHNUT_CHART:
-                    this.echartOptions.series[0].data = props.data;
-                    break;
-                case EchartType.HEATMAP_CHART:
-                    this.echartOptions.series[0].data = props.data;
-                    const range = (props as HeatmapChartStateModel).range;
-                    this.echartOptions.visualMap.min = range.min;
-                    this.echartOptions.visualMap.max = range.max;
-                    break;
-                case EchartType.LINE_CHART:
-                    this.echartOptions.series = props.data;
-                    break;
-                default:
-                    break;
-            }
-
+            const range = (props as HeatmapChartStateModel).range;
+            this.echartOptions.series[0].data = props.data;
+            this.echartOptions.visualMap.min = range.min;
+            this.echartOptions.visualMap.max = range.max;
             this.form.setValue({ ...props.filter });
             this.requestBody = props.requestBody;
+        });
+    }
+
+    subToLineChart() {
+        this.echartData$ = this.store.select(selectLineChart);
+        this.echartData$.subscribe(({ data, filter, requestBody }) => {
+            this.echartOptions.series = data;
+            this.form.setValue({ ...filter });
+            this.requestBody = requestBody;
         });
     }
 

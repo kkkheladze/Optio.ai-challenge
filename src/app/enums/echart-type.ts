@@ -2,5 +2,4 @@ export enum EchartType {
     DOUGHNUT_CHART = 'DOUGHNUT_CHART',
     HEATMAP_CHART = 'HEATMAP_CHART',
     LINE_CHART = 'LINE_CHART',
-    TABLE = 'TABLE',
 }

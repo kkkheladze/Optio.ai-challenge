@@ -10,6 +10,7 @@ import { setTableData, setTableFilter } from '../../../state/table/table.actions
 import { TableDataInterface } from '../../../interfaces/table-data.interface';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UtilsService } from '../../../services/utils.service';
+import { ApiService } from '../../../services/api.service';
 
 @Component({
     selector: 'app-table',
@@ -33,6 +34,7 @@ export class TableComponent implements OnInit {
         private store: Store<AppState>,
         private fb: FormBuilder,
         private echartService: EchartService,
+        private apiService: ApiService,
         private router: Router,
         private route: ActivatedRoute,
         private utils: UtilsService
@@ -67,7 +69,7 @@ export class TableComponent implements OnInit {
 
         await this.store.dispatch(setTableFilter({ ...this.form.value, requestBody: this.requestBody }));
 
-        const response = await this.echartService.getEntireDataFromApiForLineChart('find', this.requestBody);
+        const response = await this.apiService.getEntireDataFromApiForLineChart('find', this.requestBody);
         await this.store.dispatch(setTableData({ data: response.data.entities }));
         this.loading = false;
     }

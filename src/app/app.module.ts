@@ -15,7 +15,7 @@ import { dashboardReducer } from './state/dashboard/dashboard.reducer';
 import { environment } from '../environments/environment';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { EchartComponent } from './components/shared/echart/echart.component';
-import { TableChartComponent } from './components/shared/table-chart/table-chart.component';
+import { TableChartComponent } from './components/pages/dashboard/table-chart/table-chart.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TableModule } from 'primeng/table';
 import { tableReducer } from './state/table/table.reducer';

@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { ApiService } from '../../../services/api.service';
+import { ApiService } from '../../../../services/api.service';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
-import { AppState } from '../../../state/app.state';
-import { selectTableChart } from '../../../state/dashboard/dashboard.selectors';
-import { TableChartStateModel } from '../../../state/dashboard/dashboard.model';
-import { TableChartData } from '../../../interfaces/echart-data';
-import { AggregateResponse } from '../../../interfaces/responses.interface';
-import { setTableChartData, setTableChartFilter } from '../../../state/dashboard/dashboard.actions';
+import { AppState } from '../../../../state/app.state';
+import { selectTableChart } from '../../../../state/dashboard/dashboard.selectors';
+import { TableChartStateModel } from '../../../../state/dashboard/dashboard.model';
+import { TableChartData } from '../../../../interfaces/echart-data';
+import { AggregateResponse } from '../../../../interfaces/responses.interface';
+import { setTableChartData, setTableChartFilter } from '../../../../state/dashboard/dashboard.actions';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
