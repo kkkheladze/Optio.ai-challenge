@@ -28,7 +28,11 @@
         <a
             class="text-info text-decoration-none"
             [routerLink]="['/table']"
-            [queryParams]="{ fromChart: 'spendingHeatmap', date: this.form.value.date }"
+            [queryParams]="{
+                fromChart: 'spendingHeatmap',
+                from: this.utilsService.getFirstAndLastDayOfMonth(this.form.value.date).from,
+                to: this.utilsService.getFirstAndLastDayOfMonth(this.form.value.date).to
+            }"
         >
             DETAILS</a
         >

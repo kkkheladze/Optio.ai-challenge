@@ -46,7 +46,7 @@ export class EchartComponent implements OnInit, AfterViewInit {
         private store: Store<AppState>,
         private echartService: EchartService,
         private apiService: ApiService,
-        private utilsService: UtilsService
+        public utilsService: UtilsService
     ) {}
 
     ngOnInit() {

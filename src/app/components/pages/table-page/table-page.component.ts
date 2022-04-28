@@ -13,11 +13,11 @@ import { UtilsService } from '../../../services/utils.service';
 import { ApiService } from '../../../services/api.service';
 
 @Component({
-    selector: 'app-table',
-    templateUrl: './table.component.html',
-    styleUrls: ['./table.component.scss'],
+    selector: 'app-table-page',
+    templateUrl: './table-page.component.html',
+    styleUrls: ['./table-page.component.scss'],
 })
-export class TableComponent implements OnInit {
+export class TablePageComponent implements OnInit {
     table$: Observable<TableStateModel>;
     form: FormGroup = this.fb.group({
         from: this.fb.control(''),
@@ -89,26 +89,16 @@ export class TableComponent implements OnInit {
     }
 
     handleQueryParams() {
-        this.route.queryParams.subscribe((params) => {
-            const editableParams = JSON.parse(JSON.stringify(params)); // deep clone object
-            if (Object.keys(editableParams).length === 0) return;
-
-            if (editableParams.hasOwnProperty('date')) {
-                const { from, to } = this.utils.getFirstAndLastDayOfMonth(editableParams.date);
-                delete editableParams.date;
-                editableParams.from = from;
-                editableParams.to = to;
-            }
+        this.route.queryParams.subscribe(async (params) => {
+            if (Object.keys(params).length === 0) return;
 
             this.form.setValue({
                 ...this.form.value,
-                ...editableParams,
+                ...params,
             });
 
             const { from, to, fromChart, sortBy, sortDirection } = this.form.value;
-
             const reqBody = this.utils.getRequestBodyBasedOnSelectedChart(fromChart);
-
             this.requestBody = {
                 ...this.requestBody,
                 ...reqBody,

@@ -4,7 +4,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { DashboardComponent } from './components/pages/dashboard/dashboard.component';
-import { TableComponent } from './components/pages/table-page/table.component';
 import { NotFoundComponent } from './components/pages/not-found/not-found.component';
 import { NavComponent } from './components/nav/nav.component';
 import { HttpClientModule } from '@angular/common/http';
@@ -19,12 +18,13 @@ import { TableChartComponent } from './components/pages/dashboard/table-chart/ta
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TableModule } from 'primeng/table';
 import { tableReducer } from './state/table/table.reducer';
+import { TablePageComponent } from './components/pages/table-page/table-page.component';
 
 @NgModule({
     declarations: [
         AppComponent,
         DashboardComponent,
-        TableComponent,
+        TablePageComponent,
         NotFoundComponent,
         NavComponent,
         EchartComponent,
